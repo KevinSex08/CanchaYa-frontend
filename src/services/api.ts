@@ -1,8 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { tokenStorage } from './auth';
-
-// Declaración local para evitar errores de tipo en proyectos sin Node.js types
-declare const process: any;
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 const getApiBaseUrl = (): string => {
   try {
@@ -10,19 +7,9 @@ const getApiBaseUrl = (): string => {
       if (import.meta.env.VITE_API_BASE_URL) {
         return import.meta.env.VITE_API_BASE_URL;
       }
-      if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
-      }
     }
   } catch (e) {}
-
-  try {
-    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
-      return process.env.REACT_APP_API_URL;
-    }
-  } catch (e) {}
-
-  return 'https://api.canchaya.com'; // URL de fallback predeterminada
+  return 'http://localhost:9090'; // URL de fallback apuntando a Nginx
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -40,18 +27,20 @@ const api = axios.create({
 
 /**
  * Interceptor de Peticiones (Request Interceptor)
- * Inyecta automáticamente el token JWT Bearer si existe en el almacenamiento
+ * Inyecta automáticamente el token JWT Bearer si existe en la sesión de Amplify
  */
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // Obtenemos el token (usualmente el IdToken contiene los claims del usuario en Cognito,
-    // pero también podemos usar el AccessToken. Probamos con IdToken primero, luego AccessToken)
-    const token = tokenStorage.getIdToken() || tokenStorage.getAccessToken();
-
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config: InternalAxiosRequestConfig) => {
+    try {
+      const session = await fetchAuthSession();
+      const token = session.tokens?.accessToken?.toString();
+      
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      // El usuario no está autenticado, continuar sin token
     }
-
     return config;
   },
   (error: AxiosError) => {
@@ -71,19 +60,13 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401 || status === 403) {
-      console.warn(`Error de autenticación detectado (${status}). Limpiando sesión y redirigiendo al login...`);
+      console.warn(`Error de autenticación detectado (${status}). Redirigiendo al login...`);
       
-      // Limpiar tokens expirados o no válidos
-      tokenStorage.clearTokens();
-
-      // Emitir un evento global para que componentes de React/Ionic puedan reaccionar
-      // sin necesidad de refrescar la página completa (ej. mostrar alerta, actualizar estado de auth context)
       const unauthorizedEvent = new CustomEvent('canchaya-unauthorized', {
         detail: { status }
       });
       window.dispatchEvent(unauthorizedEvent);
 
-      // Redirección directa al login como fallback, evitando bucle si ya estamos en /login
       const currentPath = window.location.pathname;
       if (!currentPath.includes('/login')) {
         window.location.href = '/login';
