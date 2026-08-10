@@ -1,8 +1,8 @@
 // Exportación de la instancia base de Axios
 export { default as api } from './api';
 
-// Exportación del almacenamiento abstracto de tokens y el servicio de autenticación Cognito
-export { tokenStorage, authService } from './auth';
+// Exportación del servicio de autenticación Cognito
+export { authService } from './auth';
 
 // Exportación de los servicios específicos por dominio
 export { courtService } from './courts';
