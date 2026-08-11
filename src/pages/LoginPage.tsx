@@ -21,6 +21,7 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { authService } from '../services';
 
 /**
@@ -88,9 +89,6 @@ export const LoginPage: React.FC = () => {
         password: password
       });
 
-      // Se guarda explícitamente en el localStorage cumpliendo con el requerimiento de la rúbrica
-      // (aunque aws-amplify internamente ya maneje sus tokens).
-      import { fetchAuthSession } from 'aws-amplify/auth';
       const session = await fetchAuthSession();
       if (session.tokens?.accessToken) {
         localStorage.setItem('cognito_access_token', session.tokens.accessToken.toString());

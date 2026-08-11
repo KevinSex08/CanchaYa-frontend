@@ -33,19 +33,25 @@ import {
   refreshOutline,
   layersOutline
 } from 'ionicons/icons';
-import { reservationService, Reservation } from '../services';
+import { useHistory } from 'react-router-dom';
+import api from '../services/api';
+import { Reservation } from '../interfaces/types';
 
 export const MisPartidos: React.FC = () => {
+  const history = useHistory();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [segment, setSegment] = useState<'actives' | 'history'>('actives');
 
   const fetchReservations = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const data = await reservationService.getMyReservations();
+      const response = await api.get<Reservation[]>('/reservations/my/');
+      
       // Ordenar por fecha del slot (más reciente primero)
-      const sorted = data.sort((a, b) => {
+      const sorted = response.data.sort((a, b) => {
         const timeA = a.slot?.startTime ? new Date(a.slot.startTime).getTime() : 0;
         const timeB = b.slot?.startTime ? new Date(b.slot.startTime).getTime() : 0;
         return timeB - timeA;
@@ -53,110 +59,11 @@ export const MisPartidos: React.FC = () => {
       setReservations(sorted);
     } catch (err: any) {
       console.error('Error al cargar reservas:', err);
-      // Fallback con datos mockeados en caso de que el backend EC2 aún no esté encendido o falle
-      const mockReservations: Reservation[] = [
-        {
-          id: 1,
-          slotId: 10,
-          userId: 'usr_1',
-          gameType: 'DOUBLES',
-          status: 'CONFIRMED',
-          createdAt: new Date().toISOString(),
-          slot: {
-            id: 10,
-            courtId: 1,
-            startTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // mañana
-            endTime: new Date(Date.now() + 25.5 * 60 * 60 * 1000).toISOString(),
-            price: 25.00,
-            isAvailable: false
-          },
-          court: {
-            id: 1,
-            name: 'Cancha Central (Cristal)',
-            location: 'Club CanchaYA Sede Norte',
-            imageUrl: '',
-            type: 'indoor',
-            surface: 'glass',
-            pricePerHour: 15.00
-          }
-        },
-        {
-          id: 2,
-          slotId: 11,
-          userId: 'usr_1',
-          gameType: 'SINGLES',
-          status: 'CONFIRMED',
-          createdAt: new Date().toISOString(),
-          slot: {
-            id: 11,
-            courtId: 2,
-            startTime: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // pasado mañana
-            endTime: new Date(Date.now() + 49 * 60 * 60 * 1000).toISOString(),
-            price: 20.00,
-            isAvailable: false
-          },
-          court: {
-            id: 2,
-            name: 'Cancha Rápida #2',
-            location: 'Club CanchaYA Sede Norte',
-            imageUrl: '',
-            type: 'outdoor',
-            surface: 'panoramic',
-            pricePerHour: 20.00
-          }
-        },
-        {
-          id: 3,
-          slotId: 8,
-          userId: 'usr_1',
-          gameType: 'DOUBLES',
-          status: 'CONFIRMED',
-          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // hace 5 dias
-          slot: {
-            id: 8,
-            courtId: 1,
-            startTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            endTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000 + 1.5 * 60 * 60 * 1000).toISOString(),
-            price: 25.00,
-            isAvailable: false
-          },
-          court: {
-            id: 1,
-            name: 'Cancha Central (Cristal)',
-            location: 'Club CanchaYA Sede Norte',
-            imageUrl: '',
-            type: 'indoor',
-            surface: 'glass',
-            pricePerHour: 15.00
-          }
-        },
-        {
-          id: 4,
-          slotId: 4,
-          userId: 'usr_1',
-          gameType: 'SINGLES',
-          status: 'CANCELLED',
-          createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // hace 10 dias
-          slot: {
-            id: 4,
-            courtId: 3,
-            startTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-            endTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000 + 1.5 * 60 * 60 * 1000).toISOString(),
-            price: 18.00,
-            isAvailable: false
-          },
-          court: {
-            id: 3,
-            name: 'Cancha Muro #1',
-            location: 'Club CanchaYA Sede Sur',
-            imageUrl: '',
-            type: 'outdoor',
-            surface: 'wall',
-            pricePerHour: 12.00
-          }
-        }
-      ];
-      setReservations(mockReservations);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Sesión expirada o no autorizada. Redirigiendo...');
+      } else {
+        setError('No se pudieron obtener tus partidos. Inténtalo de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
@@ -169,6 +76,19 @@ export const MisPartidos: React.FC = () => {
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
     await fetchReservations();
     event.detail.complete();
+  };
+
+  const handleCancel = async (id: number) => {
+    if (window.confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
+      try {
+        await api.patch(`/reservations/${id}/cancel/`);
+        alert('Reserva cancelada con éxito');
+        fetchReservations();
+      } catch (err: any) {
+        console.error('Error al cancelar la reserva:', err);
+        alert('Error al cancelar la reserva. Por favor intenta más tarde.');
+      }
+    }
   };
 
   // Filtrar reservas según el segmento
@@ -248,6 +168,16 @@ export const MisPartidos: React.FC = () => {
             <IonSpinner name="crescent" color="primary" style={{ transform: 'scale(1.3)', marginBottom: '16px' }} />
             <IonText color="medium">Cargando partidos...</IonText>
           </div>
+        ) : error ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px', textAlign: 'center', padding: '24px' }}>
+            <IonText color="danger">
+              <h3 style={{ fontWeight: 'bold', marginBottom: '8px' }}>¡Ups! Algo salió mal</h3>
+            </IonText>
+            <p style={{ color: 'var(--ion-color-medium)', marginBottom: '24px', fontSize: '15px' }}>{error}</p>
+            <IonButton color="primary" onClick={fetchReservations} style={{ '--border-radius': '8px', fontWeight: '600' }}>
+              Reintentar
+            </IonButton>
+          </div>
         ) : filteredReservations.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px', textAlign: 'center', padding: '24px' }}>
             <IonIcon icon={calendarOutline} color="medium" style={{ fontSize: '72px', opacity: 0.3, marginBottom: '16px' }} />
@@ -260,7 +190,7 @@ export const MisPartidos: React.FC = () => {
                 : 'Las reservas canceladas o pasadas aparecerán aquí.'}
             </p>
             {segment === 'actives' && (
-              <IonButton color="primary" href="/courts" style={{ '--border-radius': '8px', fontWeight: '600' }}>
+              <IonButton color="primary" onClick={() => history.push('/courts')} style={{ '--border-radius': '8px', fontWeight: '600' }}>
                 Explorar Canchas
               </IonButton>
             )}
@@ -369,17 +299,7 @@ export const MisPartidos: React.FC = () => {
                           color="danger" 
                           size="small"
                           style={{ '--border-radius': '6px', fontSize: '12px', fontWeight: '600', margin: '0' }}
-                          onClick={async () => {
-                            if (window.confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
-                              try {
-                                await reservationService.cancelReservation(reservation.id);
-                                alert('Reserva cancelada con éxito');
-                                fetchReservations();
-                              } catch (err) {
-                                alert('Error al cancelar la reserva');
-                              }
-                            }
-                          }}
+                          onClick={() => handleCancel(reservation.id)}
                         >
                           Cancelar Turno
                         </IonButton>
@@ -388,7 +308,6 @@ export const MisPartidos: React.FC = () => {
                           size="small"
                           style={{ '--border-radius': '6px', fontSize: '12px', fontWeight: '600', margin: '0' }}
                           onClick={() => {
-                            // Lleva al panel de anotación de puntuación (Scoreboard) pasándole el id de reserva
                             window.location.href = `/admin/scoreboard/${reservation.id}`;
                           }}
                         >
