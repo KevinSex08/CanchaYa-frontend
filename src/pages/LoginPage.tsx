@@ -96,8 +96,8 @@ export const LoginPage: React.FC = () => {
 
       console.log('[LoginPage] Login exitoso:', response);
       
-      // Redireccionar al catálogo de canchas tras el éxito
-      history.push('/courts');
+      // Redireccionar al catálogo de canchas (rutas actualizadas)
+      history.push('/app/courts');
     } catch (err: any) {
       console.error('[LoginPage] Error en login:', err);
       // Extraer mensaje amigable de Cognito/Servidor
