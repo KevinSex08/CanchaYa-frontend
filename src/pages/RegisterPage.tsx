@@ -11,8 +11,7 @@ import {
   IonItem,
   IonText,
   IonSpinner,
-  IonIcon,
-  IonAlert
+  IonIcon
 } from '@ionic/react';
 import { mailOutline, lockClosedOutline, personOutline, alertCircleOutline } from 'ionicons/icons';
 import { useHistory, Link } from 'react-router-dom';

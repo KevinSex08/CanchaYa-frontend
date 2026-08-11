@@ -14,7 +14,7 @@ export const authService = {
    */
   login: async (credentials: LoginCredentials): Promise<CognitoLoginResponse> => {
     try {
-      const { isSignedIn, nextStep } = await signIn({
+      await signIn({
         username: credentials.username,
         password: credentials.password
       });

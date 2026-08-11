@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ============================================================================
  * EJEMPLO 1: Usando la librería oficial 'aws-amplify' (Recomendado para React)

@@ -12,7 +12,7 @@ export const gameService = {
    */
   startGameRecord: async (payload: StartGamePayload): Promise<GameRecord> => {
     try {
-      const response = await api.post<GameRecord>('/game-records', payload);
+      const response = await api.post<GameRecord>('/game-records/', payload);
       return response.data;
     } catch (error) {
       console.error('Error al iniciar registro del partido:', error);
@@ -27,7 +27,7 @@ export const gameService = {
    */
   finishGameRecord: async (id: number, payload: FinishGamePayload): Promise<GameRecord> => {
     try {
-      const response = await api.patch<GameRecord>(`/game-records/${id}/finish`, payload);
+      const response = await api.patch<GameRecord>(`/game-records/${id}/finish/`, payload);
       return response.data;
     } catch (error) {
       console.error(`Error al finalizar el partido ${id}:`, error);
