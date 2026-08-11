@@ -22,6 +22,7 @@ import {
 import { CourtsPage } from './pages/CourtsPage';
 import { AdminScoreboardPage } from './pages/AdminScoreboardPage';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { HomeDashboard } from './pages/HomeDashboard';
 import { MisPartidos } from './pages/MisPartidos';
 import { PerfilJugador } from './pages/PerfilJugador';
@@ -59,6 +60,7 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         {/* Rutas Públicas y Administrativas fuera de los Tabs */}
         <Route exact path="/login" component={LoginPage} />
+        <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/admin/scoreboard" component={AdminScoreboardPage} />
         <Route exact path="/admin/scoreboard/:id" component={AdminScoreboardPage} />
         
