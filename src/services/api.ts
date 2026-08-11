@@ -9,7 +9,7 @@ const getApiBaseUrl = (): string => {
       }
     }
   } catch (e) { }
-  return 'http://184.73.14.40:9090/api/v1'; // URL de fallback con el prefijo correcto para los endpoints
+  return 'https://canchaya.duckdns.org/api/v1'; // URL de fallback apuntando al backend seguro
 };
 
 const API_BASE_URL = getApiBaseUrl();
