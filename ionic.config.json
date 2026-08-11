@@ -1,5 +1,7 @@
 {
-  "name": "CanchaYA",
-  "integrations": {},
-  "type": "react"
+  "name": "CanchaYa-frontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
 }
