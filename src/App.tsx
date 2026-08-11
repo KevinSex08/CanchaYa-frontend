@@ -58,50 +58,54 @@ const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        {/* Rutas Públicas y Administrativas fuera de los Tabs */}
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/admin/scoreboard" component={AdminScoreboardPage} />
         <Route exact path="/admin/scoreboard/:id" component={AdminScoreboardPage} />
         
-        {/* Vistas Principales del Cliente agrupadas en Tabs */}
-        <Route path="/" render={() => (
+        {/* Vistas Principales del Cliente agrupadas en Tabs bajo la ruta /app */}
+        <Route path="/app" render={() => (
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/dashboard" component={HomeDashboard} />
-              <Route exact path="/courts" component={CourtsPage} />
-              <Route exact path="/mis-partidos" component={MisPartidos} />
-              <Route exact path="/perfil" component={PerfilJugador} />
+              <Route exact path="/app/dashboard" component={HomeDashboard} />
+              <Route exact path="/app/courts" component={CourtsPage} />
+              <Route exact path="/app/mis-partidos" component={MisPartidos} />
+              <Route exact path="/app/perfil" component={PerfilJugador} />
               
               {/* Redirección por defecto al Dashboard de la sección del cliente */}
-              <Route exact path="/">
-                <Redirect to="/dashboard" />
+              <Route exact path="/app">
+                <Redirect to="/app/dashboard" />
               </Route>
             </IonRouterOutlet>
 
             <IonTabBar slot="bottom">
-              <IonTabButton tab="dashboard" href="/dashboard">
+              <IonTabButton tab="dashboard" href="/app/dashboard">
                 <IonIcon icon={homeOutline} />
                 <IonLabel>Inicio</IonLabel>
               </IonTabButton>
 
-              <IonTabButton tab="courts" href="/courts">
+              <IonTabButton tab="courts" href="/app/courts">
                 <IonIcon icon={tennisballOutline} />
                 <IonLabel>Canchas</IonLabel>
               </IonTabButton>
 
-              <IonTabButton tab="mis-partidos" href="/mis-partidos">
+              <IonTabButton tab="mis-partidos" href="/app/mis-partidos">
                 <IonIcon icon={calendarOutline} />
                 <IonLabel>Mis Partidos</IonLabel>
               </IonTabButton>
 
-              <IonTabButton tab="perfil" href="/perfil">
+              <IonTabButton tab="perfil" href="/app/perfil">
                 <IonIcon icon={personOutline} />
                 <IonLabel>Perfil</IonLabel>
               </IonTabButton>
             </IonTabBar>
           </IonTabs>
         )} />
+        
+        {/* Redirección global desde la raíz */}
+        <Route exact path="/">
+          <Redirect to="/app/dashboard" />
+        </Route>
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
