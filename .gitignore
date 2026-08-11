@@ -1,1 +1,9 @@
 node_modules
+.env
+.env.*
+!.env.example
+dist
+dist-ssr
+*.local
+.idea/
+.DS_Store
