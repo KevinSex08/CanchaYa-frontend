@@ -60,17 +60,21 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401 || status === 403) {
-      console.warn(`Error de autenticación detectado (${status}). Redirigiendo al login...`);
+      console.warn(`Error de autenticación detectado (${status}).`);
 
       const unauthorizedEvent = new CustomEvent('canchaya-unauthorized', {
         detail: { status }
       });
       window.dispatchEvent(unauthorizedEvent);
 
+      // Desactivamos la redirección forzada temporalmente para evitar el "loop" infinito
+      // que te saca del sistema si el backend falla al validar el token.
+      /*
       const currentPath = window.location.pathname;
       if (!currentPath.includes('/login')) {
         window.location.href = '/login';
       }
+      */
     }
 
     return Promise.reject(error);
