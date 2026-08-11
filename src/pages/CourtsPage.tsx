@@ -22,9 +22,20 @@ export const CourtsPage: React.FC = () => {
   const history = useHistory();
 
   const handleSelectCourt = (courtId: number) => {
-    console.log(`[CourtsPage] Cancha seleccionada: ${courtId}`);
-    // En una aplicación real, aquí redirigiríamos al flujo de reserva de horarios:
-    // history.push(`/courts/${courtId}/slots`);
+    console.log(`[CourtsPage] Intentando reservar cancha: ${courtId}`);
+    
+    // Verificación de autenticación basada en localStorage según el requerimiento
+    const token = localStorage.getItem('cognito_access_token');
+    
+    if (!token) {
+      // Si no hay token, el usuario no está autenticado, redirigir al login
+      console.warn('Usuario no autenticado, redirigiendo al login...');
+      history.push('/login');
+      return;
+    }
+
+    // Si está autenticado, continuar con el flujo de reserva
+    history.push(`/courts/${courtId}/slots`);
   };
 
   const goToAdmin = () => {

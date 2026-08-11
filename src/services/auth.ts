@@ -1,5 +1,9 @@
-import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
+import { signIn, signOut, getCurrentUser, signUp } from 'aws-amplify/auth';
 import { CognitoLoginResponse, LoginCredentials } from '../interfaces/types';
+
+export interface RegisterCredentials extends LoginCredentials {
+  name: string;
+}
 
 /**
  * Servicio de Autenticación con AWS Cognito usando aws-amplify
@@ -15,7 +19,6 @@ export const authService = {
         password: credentials.password
       });
 
-      // aws-amplify maneja el almacenamiento de tokens automáticamente en LocalStorage/SessionStorage
       return {
         AuthenticationResult: {
           AccessToken: 'managed-by-amplify',
@@ -27,6 +30,26 @@ export const authService = {
       };
     } catch (error: any) {
       console.error('Error durante el inicio de sesión en Cognito (Amplify):', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Registra un nuevo usuario en Cognito
+   */
+  register: async (credentials: RegisterCredentials): Promise<void> => {
+    try {
+      await signUp({
+        username: credentials.username,
+        password: credentials.password,
+        options: {
+          userAttributes: {
+            name: credentials.name
+          }
+        }
+      });
+    } catch (error: any) {
+      console.error('Error durante el registro en Cognito (Amplify):', error);
       throw error;
     }
   },
