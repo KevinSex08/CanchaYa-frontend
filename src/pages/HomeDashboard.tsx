@@ -89,7 +89,7 @@ export const HomeDashboard: React.FC = () => {
           </IonButtons>
           <IonTitle style={{ fontWeight: '800', letterSpacing: '0.5px' }}>CanchaYA</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => history.push('/perfil')} title="Mi Perfil">
+            <IonButton onClick={() => history.push('/app/perfil')} title="Mi Perfil">
               <IonIcon slot="icon-only" icon={personCircleOutline} />
             </IonButton>
           </IonButtons>
@@ -159,7 +159,7 @@ export const HomeDashboard: React.FC = () => {
               <IonButton 
                 color="light" 
                 style={{ '--border-radius': '10px', fontWeight: '700', fontSize: '14px', margin: '0' }}
-                onClick={() => history.push('/courts')}
+                onClick={() => history.push('/app/courts')}
               >
                 Reservar Ahora
                 <IonIcon slot="end" icon={arrowForwardOutline} />
@@ -203,7 +203,7 @@ export const HomeDashboard: React.FC = () => {
               <h2 style={{ margin: '0', fontSize: '20px', fontWeight: '800', color: 'var(--ion-text-color)' }}>
                 Canchas Disponibles
               </h2>
-              <IonButton fill="clear" onClick={() => history.push('/courts')} style={{ fontWeight: '600', fontSize: '14px' }}>
+              <IonButton fill="clear" onClick={() => history.push('/app/courts')} style={{ fontWeight: '600', fontSize: '14px' }}>
                 Ver Todas
               </IonButton>
             </div>
@@ -263,7 +263,7 @@ export const HomeDashboard: React.FC = () => {
                                 size="small" 
                                 color="primary" 
                                 style={{ '--border-radius': '6px', margin: '0' }}
-                                onClick={() => history.push('/courts')}
+                                onClick={() => history.push('/app/courts')}
                               >
                                 Reservar
                               </IonButton>

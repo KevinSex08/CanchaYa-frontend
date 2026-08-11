@@ -106,6 +106,11 @@ const App: React.FC = () => (
         <Route exact path="/">
           <Redirect to="/app/dashboard" />
         </Route>
+        
+        {/* Ruta comodín (Catch-all) para redirigir URLs inválidas o antiguas */}
+        <Route>
+          <Redirect to="/app/dashboard" />
+        </Route>
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
