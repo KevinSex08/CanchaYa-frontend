@@ -57,15 +57,15 @@ export const RegisterPage: React.FC = () => {
               <form onSubmit={handleRegister}>
                 <IonItem lines="none" style={{ '--background': '#f8f9fa', borderRadius: '8px', marginBottom: '10px' }}>
                   <IonIcon icon={personOutline} slot="start" color="medium" />
-                  <IonInput type="text" placeholder="Nombre completo" value={name} onIonInput={e => setName(e.detail.value!)} disabled={isLoading} />
+                  <IonInput type="text" placeholder="Nombre completo" value={name} onIonInput={e => setName(e.detail.value!)} disabled={isLoading} style={{ '--color': '#111111' }} />
                 </IonItem>
                 <IonItem lines="none" style={{ '--background': '#f8f9fa', borderRadius: '8px', marginBottom: '10px' }}>
                   <IonIcon icon={mailOutline} slot="start" color="medium" />
-                  <IonInput type="email" placeholder="Correo electrónico" value={email} onIonInput={e => setEmail(e.detail.value!)} disabled={isLoading} />
+                  <IonInput type="email" placeholder="Correo electrónico" value={email} onIonInput={e => setEmail(e.detail.value!)} disabled={isLoading} style={{ '--color': '#111111' }} />
                 </IonItem>
                 <IonItem lines="none" style={{ '--background': '#f8f9fa', borderRadius: '8px', marginBottom: '10px' }}>
                   <IonIcon icon={lockClosedOutline} slot="start" color="medium" />
-                  <IonInput type="password" placeholder="Contraseña" value={password} onIonInput={e => setPassword(e.detail.value!)} disabled={isLoading} />
+                  <IonInput type="password" placeholder="Contraseña" value={password} onIonInput={e => setPassword(e.detail.value!)} disabled={isLoading} style={{ '--color': '#111111' }} />
                 </IonItem>
                 
                 {errorMsg && (

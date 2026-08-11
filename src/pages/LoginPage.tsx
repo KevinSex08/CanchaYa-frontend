@@ -183,7 +183,7 @@ export const LoginPage: React.FC = () => {
                       if (emailError) setEmailError(null);
                     }}
                     disabled={isLoading}
-                    style={{ fontSize: '15px' }}
+                    style={{ fontSize: '15px', '--color': '#111111' }}
                   />
                 </IonItem>
                 {emailError && (
@@ -216,7 +216,7 @@ export const LoginPage: React.FC = () => {
                       if (passwordError) setPasswordError(null);
                     }}
                     disabled={isLoading}
-                    style={{ fontSize: '15px' }}
+                    style={{ fontSize: '15px', '--color': '#111111' }}
                   />
                 </IonItem>
                 {passwordError && (
