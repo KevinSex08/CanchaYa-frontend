@@ -29,7 +29,7 @@ export const AdminScoreboardPage: React.FC = () => {
     console.log(`[AdminScoreboardPage] El partido de la reserva #${reservationId} ha sido registrado.`);
     // Redirigir de vuelta al catálogo de canchas tras guardar exitosamente
     setTimeout(() => {
-      history.push('/courts');
+      history.push('/app/courts');
     }, 1500);
   };
 

@@ -190,7 +190,7 @@ export const MisPartidos: React.FC = () => {
                 : 'Las reservas canceladas o pasadas aparecerán aquí.'}
             </p>
             {segment === 'actives' && (
-              <IonButton color="primary" onClick={() => history.push('/courts')} style={{ '--border-radius': '8px', fontWeight: '600' }}>
+              <IonButton color="primary" onClick={() => history.push('/app/courts')} style={{ '--border-radius': '8px', fontWeight: '600' }}>
                 Explorar Canchas
               </IonButton>
             )}
