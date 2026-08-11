@@ -32,7 +32,8 @@ api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const session = await fetchAuthSession();
-      const token = session.tokens?.accessToken?.toString();
+      // Algunos backends de Spring Boot requieren el IdToken para leer el email/roles
+      const token = session.tokens?.idToken?.toString() || session.tokens?.accessToken?.toString();
 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
