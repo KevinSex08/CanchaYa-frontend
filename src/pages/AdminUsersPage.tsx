@@ -10,18 +10,32 @@ import {
   IonButton,
   IonItem,
   IonLabel,
-  IonInput
+  IonInput,
+  useIonToast
 } from '@ionic/react';
 import { adminService } from '../services/admin';
 
 export const AdminUsersPage: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [present] = useIonToast();
 
   const handleMakeAdmin = async () => {
     if (!email) return;
-    alert(`Stub: Otorgando permisos a ${email}`);
-    await adminService.makeAdmin(email);
-    setEmail('');
+    try {
+      await adminService.makeAdmin(email);
+      setEmail('');
+      present({
+        message: `Se han otorgado permisos de administrador a ${email}`,
+        duration: 3000,
+        color: 'success'
+      });
+    } catch (error) {
+      present({
+        message: 'Error al actualizar permisos',
+        duration: 3000,
+        color: 'danger'
+      });
+    }
   };
 
   return (

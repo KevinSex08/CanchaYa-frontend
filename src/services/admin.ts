@@ -9,9 +9,6 @@ export const adminService = {
    * Obtener todas las canchas para el panel admin
    */
   getCourts: async () => {
-    // Si la ruta /admin/courts existiera:
-    // return await api.get('/admin/courts');
-    // Por ahora usamos la pública para que no se rompa la UI
     return await api.get('/courts');
   },
 
@@ -19,26 +16,28 @@ export const adminService = {
    * Crear una nueva cancha
    */
   createCourt: async (payload: any) => {
-    // Stub
-    console.log('Stub: Crear Cancha', payload);
-    return Promise.resolve({ data: { id: Date.now(), ...payload } });
+    return await api.post('/courts', payload);
   },
 
   /**
    * Generar horarios (slots) para una cancha y fecha
    */
   createSlots: async (courtId: number, date: string, startTime: string, endTime: string, slotDuration: number, price: number) => {
-    // Stub
-    console.log('Stub: Generar Horarios', { courtId, date, startTime, endTime, slotDuration, price });
-    return Promise.resolve({ data: { message: 'Horarios generados' } });
+    return await api.post('/admin/slots', {
+      courtId,
+      date,
+      startTime,
+      endTime,
+      slotDuration,
+      price
+    });
   },
 
   /**
    * Dar permisos de administrador a un usuario
    */
   makeAdmin: async (email: string) => {
-    // Stub
-    console.log('Stub: Hacer Admin a', email);
-    return Promise.resolve({ data: { message: 'Permisos actualizados' } });
+    // Note: this calls /users/admin/roles because it's handled by users microservice
+    return await api.post('/users/admin/roles', { email });
   }
 };
