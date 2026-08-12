@@ -17,7 +17,7 @@ import {
   IonToast,
   IonAlert
 } from '@ionic/react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { calendarOutline, timeOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { courtService } from '../services/courts';
 import { reservationService } from '../services/reservations';
@@ -25,7 +25,6 @@ import { Slot, Court } from '../interfaces/types';
 
 export const CourtSlotsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const history = useHistory();
   const courtId = parseInt(id, 10);
 
   const [court, setCourt] = useState<Court | null>(null);
