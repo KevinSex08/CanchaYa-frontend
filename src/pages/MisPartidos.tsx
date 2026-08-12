@@ -48,7 +48,7 @@ export const MisPartidos: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get<Reservation[]>('/reservations/my/');
+      const response = await api.get<Reservation[]>('/reservations/my');
       
       // Ordenar por fecha del slot (más reciente primero)
       const sorted = response.data.sort((a, b) => {

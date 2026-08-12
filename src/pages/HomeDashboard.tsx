@@ -47,9 +47,9 @@ export const HomeDashboard: React.FC = () => {
     setError(null);
     try {
       const [courtsRes, reservationsRes, profileRes] = await Promise.all([
-        api.get<Court[]>('/courts/'),
-        api.get<Reservation[]>('/reservations/my/'),
-        api.get<any>('/users/profile/')
+        api.get<Court[]>('/courts'),
+        api.get<Reservation[]>('/reservations/my'),
+        api.get<any>('/users/me')
       ]);
 
       setCourts(courtsRes.data.slice(0, 2));

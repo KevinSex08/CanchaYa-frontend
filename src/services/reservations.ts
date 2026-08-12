@@ -26,7 +26,7 @@ export const reservationService = {
    */
   getMyReservations: async (): Promise<Reservation[]> => {
     try {
-      const response = await api.get<Reservation[]>('/reservations/my/');
+      const response = await api.get<Reservation[]>('/reservations/my');
       return response.data;
     } catch (error) {
       console.error('Error al obtener mis reservas:', error);
