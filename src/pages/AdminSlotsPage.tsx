@@ -24,7 +24,7 @@ export const AdminSlotsPage: React.FC = () => {
 
   const handleCreate = async () => {
     try {
-      await adminService.createSlots(parseInt(courtId), date, '08:00', '22:00', 90, 40);
+      await adminService.createSlots(parseInt(courtId), date.substring(0, 10), '08:00', '22:00', 90, 40);
       present({
         message: 'Horarios generados correctamente en el servidor',
         duration: 3000,

@@ -30,6 +30,7 @@ import { gameService } from '../services';
 interface MatchScoreboardProps {
   reservationId: number;
   courtName: string;
+  gameType?: 'CLASSIC' | 'SUPER_8';
   onFinished?: () => void;
 }
 
@@ -44,9 +45,10 @@ interface Super8PlayerScore {
 export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
   reservationId,
   courtName,
+  gameType,
   onFinished
 }) => {
-  const [mode, setMode] = useState<'CLASSIC' | 'SUPER_8'>('CLASSIC');
+  const [mode, setMode] = useState<'CLASSIC' | 'SUPER_8'>(gameType || 'CLASSIC');
   
   // Estado Clásico
   const [scoreTeam1, setScoreTeam1] = useState<number>(0);
@@ -100,22 +102,25 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
+      // 1. Create the GameRecord for this reservation (it might fail if already exists, but backend should handle or we assume it succeeds)
+      const gameRecord = await gameService.startGameRecord({ reservationId });
+      const gameRecordId = gameRecord.id!;
+
+      // 2. Finish the game record with its real ID
       if (mode === 'CLASSIC') {
         const winner = scoreTeam1 > scoreTeam2 ? 'TEAM_A' : scoreTeam1 < scoreTeam2 ? 'TEAM_B' : 'NONE';
-        await gameService.finishGameRecord(reservationId, {
+        await gameService.finishGameRecord(gameRecordId, {
           teamAScore: scoreTeam1,
           teamBScore: scoreTeam2,
           winnerTeam: winner
         });
       } else {
         // Modo Super 8
-        // 1. Calcular pointDifference y armar la estructura
         const leaderboard = super8Scores.map(p => ({
           ...p,
           pointDifference: p.pointsFor - p.pointsAgainst
         }));
         
-        // 2. Ordenar por pointsFor DESC, luego pointDifference DESC
         leaderboard.sort((a, b) => {
           if (b.pointsFor !== a.pointsFor) {
             return b.pointsFor - a.pointsFor;
@@ -123,14 +128,12 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
           return b.pointDifference - a.pointDifference;
         });
 
-        // 3. Serializar el JSON
         const additionalStats = JSON.stringify({
           tournamentType: 'SUPER_8',
           leaderboard
         });
 
-        // Para Super 8 no usamos TEAM_A ni TEAM_B
-        await gameService.finishGameRecord(reservationId, {
+        await gameService.finishGameRecord(gameRecordId, {
           teamAScore: 0,
           teamBScore: 0,
           additionalStats,
@@ -140,7 +143,7 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
       setShowSuccessAlert(true);
     } catch (error: any) {
       console.error('Error al finalizar el partido:', error);
-      setErrorMessage(error.message || 'Error al conectar con el servidor. Inténtalo nuevamente.');
+      setErrorMessage(error.response?.data?.message || error.message || 'Error al conectar con el servidor.');
     } finally {
       setIsSubmitting(false);
     }

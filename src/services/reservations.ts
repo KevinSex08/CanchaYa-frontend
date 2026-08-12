@@ -34,16 +34,26 @@ export const reservationService = {
     }
   },
 
-  /**
-   * Cancela una reserva específica mediante su ID
-   * PATCH /reservations/:id/cancel
-   */
   cancelReservation: async (id: number): Promise<Reservation> => {
     try {
       const response = await api.patch<Reservation>(`/reservations/${id}/cancel`);
       return response.data;
     } catch (error) {
       console.error(`Error al cancelar la reserva ${id}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Obtiene una reserva por su ID
+   * GET /reservations/:id
+   */
+  getReservationById: async (id: number): Promise<Reservation> => {
+    try {
+      const response = await api.get<Reservation>(`/reservations/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error al obtener la reserva ${id}:`, error);
       throw error;
     }
   }
