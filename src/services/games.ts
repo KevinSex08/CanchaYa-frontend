@@ -12,7 +12,7 @@ export const gameService = {
    */
   startGameRecord: async (payload: StartGamePayload): Promise<GameRecord> => {
     try {
-      const response = await api.post<GameRecord>('/game-records/', payload);
+      const response = await api.post<GameRecord>('/game-records', payload);
       return response.data;
     } catch (error) {
       console.error('Error al iniciar registro del partido:', error);
