@@ -40,6 +40,18 @@ export const AdminSlotsPage: React.FC = () => {
       return;
     }
 
+    if (startTime >= endTime) {
+      present({ message: 'La hora de inicio debe ser menor a la hora de fin', duration: 2000, color: 'warning' });
+      return;
+    }
+
+    const today = new Date().toISOString().substring(0, 10);
+    const selectedDate = date.substring(0, 10);
+    if (selectedDate < today) {
+       present({ message: 'No puedes generar horarios en el pasado', duration: 2000, color: 'warning' });
+       return;
+    }
+
     setIsSubmitting(true);
     try {
       await adminService.createSlots(

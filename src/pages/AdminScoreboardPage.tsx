@@ -13,6 +13,7 @@ import {
 import { useParams, useHistory } from 'react-router-dom';
 import { MatchScoreboard } from '../components/MatchScoreboard';
 import { reservationService } from '../services/reservations';
+import { adminService } from '../services/admin';
 import { Reservation } from '../interfaces/types';
 
 export const AdminScoreboardPage: React.FC = () => {
@@ -23,11 +24,21 @@ export const AdminScoreboardPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [allReservations, setAllReservations] = useState<Reservation[]>([]);
+
   useEffect(() => {
     const fetchReservation = async () => {
       if (!id) {
-        setError("Por favor seleccione un partido válido desde el catálogo.");
-        setLoading(false);
+        // Cargar todas las reservas
+        try {
+          const response = await adminService.getAllReservations();
+          setAllReservations(response.data || response);
+        } catch (e) {
+          console.error("Error al obtener reservas", e);
+          setError("No se pudieron cargar los partidos activos.");
+        } finally {
+          setLoading(false);
+        }
         return;
       }
       try {
@@ -74,6 +85,32 @@ export const AdminScoreboardPage: React.FC = () => {
               <h2>Error</h2>
               <p>{error}</p>
             </IonText>
+          </div>
+        ) : !id ? (
+          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <h1 style={{ fontWeight: 'bold', fontSize: '24px', marginBottom: '16px' }}>Partidos Activos</h1>
+            <p style={{ color: 'var(--ion-color-medium)', marginBottom: '24px' }}>Selecciona una reserva para gestionar su marcador.</p>
+            {allReservations.length === 0 ? (
+              <IonText color="medium"><p>No hay partidos activos en este momento.</p></IonText>
+            ) : (
+              allReservations.map(res => (
+                <div 
+                  key={res.id} 
+                  style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                  onClick={() => history.push(`/admin/scoreboard/${res.id}`)}
+                >
+                  <div>
+                    <h3 style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>Reserva #{res.id}</h3>
+                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Usuario: {res.userId}</p>
+                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Cancha ID: {res.slot?.courtId || 'N/A'}</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <IonText color="primary" style={{ fontWeight: 'bold', fontSize: '14px' }}>{res.gameType}</IonText>
+                    <p style={{ margin: '0', fontSize: '12px', color: 'gray' }}>{res.status}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         ) : reservation ? (
           <>
