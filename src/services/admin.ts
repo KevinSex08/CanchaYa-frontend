@@ -20,6 +20,20 @@ export const adminService = {
   },
 
   /**
+   * Editar una cancha existente
+   */
+  updateCourt: async (id: number, payload: any) => {
+    return await api.put(`/courts/${id}`, payload);
+  },
+
+  /**
+   * Obtener todas las reservas del sistema (requiere rol ADMIN)
+   */
+  getAllReservations: async () => {
+    return await api.get('/reservations');
+  },
+
+  /**
    * Generar horarios (slots) para una cancha y fecha
    */
   createSlots: async (courtId: number, date: string, startTime: string, endTime: string, slotDuration: number, price: number) => {

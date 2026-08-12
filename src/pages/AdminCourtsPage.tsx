@@ -30,6 +30,7 @@ export const AdminCourtsPage: React.FC = () => {
   
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [present] = useIonToast();
 
   // Estado del formulario
@@ -38,6 +39,26 @@ export const AdminCourtsPage: React.FC = () => {
   const [pricePerHour, setPricePerHour] = useState<number>(40);
   const [type, setType] = useState<'indoor' | 'outdoor'>('indoor');
   const [surface, setSurface] = useState<'glass' | 'wall' | 'panoramic'>('glass');
+
+  const openNewModal = () => {
+    setSelectedCourt(null);
+    setName('');
+    setLocation('');
+    setPricePerHour(40);
+    setType('indoor');
+    setSurface('glass');
+    setShowModal(true);
+  };
+
+  const openEditModal = (court: Court) => {
+    setSelectedCourt(court);
+    setName(court.name);
+    setLocation(court.location || '');
+    setPricePerHour(court.pricePerHour);
+    setType(court.type || 'indoor');
+    setSurface(court.surface || 'glass');
+    setShowModal(true);
+  };
 
   const fetchCourts = async () => {
     try {
@@ -66,19 +87,23 @@ export const AdminCourtsPage: React.FC = () => {
         name,
         location,
         pricePerHour,
-        type,
-        surface
+        type: type.toUpperCase(),
+        surface: surface.toUpperCase()
       };
-      await adminService.createCourt(payload);
-      present({ message: 'Cancha creada exitosamente', duration: 3000, color: 'success' });
+      
+      if (selectedCourt) {
+        await adminService.updateCourt(selectedCourt.id, payload);
+        present({ message: 'Cancha actualizada exitosamente', duration: 3000, color: 'success' });
+      } else {
+        await adminService.createCourt(payload);
+        present({ message: 'Cancha creada exitosamente', duration: 3000, color: 'success' });
+      }
+      
       setShowModal(false);
-      setName('');
-      setLocation('');
-      setPricePerHour(40);
       setLoading(true);
       fetchCourts(); // Recargar canchas
     } catch (error) {
-      present({ message: 'Error al crear la cancha', duration: 3000, color: 'danger' });
+      present({ message: selectedCourt ? 'Error al actualizar la cancha' : 'Error al crear la cancha', duration: 3000, color: 'danger' });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +121,7 @@ export const AdminCourtsPage: React.FC = () => {
       </IonHeader>
       <IonContent className="ion-padding">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-          <IonButton color="primary" onClick={() => setShowModal(true)}>
+          <IonButton color="primary" onClick={openNewModal}>
             <IonIcon slot="start" icon={addOutline} />
             Nueva Cancha
           </IonButton>
@@ -112,10 +137,10 @@ export const AdminCourtsPage: React.FC = () => {
                   <h2>{court.name}</h2>
                   <p>Precio: ${court.pricePerHour}/h</p>
                 </IonLabel>
-                <IonBadge color={court.type === 'indoor' ? 'tertiary' : 'warning'}>
-                  {court.type === 'indoor' ? 'Techada' : 'Descubierta'}
+                <IonBadge color={court.type?.toLowerCase() === 'indoor' ? 'tertiary' : 'warning'}>
+                  {court.type?.toLowerCase() === 'indoor' ? 'Techada' : 'Descubierta'}
                 </IonBadge>
-                <IonButton fill="clear" slot="end" onClick={() => present({ message: 'Edición en desarrollo', duration: 2000 })}>
+                <IonButton fill="clear" slot="end" onClick={() => openEditModal(court)}>
                   <IonIcon slot="icon-only" icon={buildOutline} />
                 </IonButton>
               </IonItem>
@@ -126,7 +151,7 @@ export const AdminCourtsPage: React.FC = () => {
         <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
           <IonHeader>
             <IonToolbar>
-              <IonTitle>Nueva Cancha</IonTitle>
+              <IonTitle>{selectedCourt ? 'Editar Cancha' : 'Nueva Cancha'}</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setShowModal(false)}><IonIcon icon={closeOutline} /></IonButton>
               </IonButtons>
