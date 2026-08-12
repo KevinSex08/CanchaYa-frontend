@@ -257,7 +257,7 @@ export const HomeDashboard: React.FC = () => {
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <IonText color="dark" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                                ${court.pricePerHour.toFixed(2)}/h
+                                ${(court.pricePerHour || 0).toFixed(2)}/h
                               </IonText>
                               <IonButton 
                                 size="small" 

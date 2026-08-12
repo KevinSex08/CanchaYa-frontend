@@ -196,7 +196,7 @@ export const CourtList: React.FC<CourtListProps> = ({ onSelectCourt }) => {
                         Precio por Hora
                       </IonText>
                       <IonText color="dark" style={{ fontSize: '22px', fontWeight: 'bold' }}>
-                        ${court.pricePerHour.toFixed(2)}
+                        ${(court.pricePerHour || 0).toFixed(2)}
                       </IonText>
                     </div>
 
