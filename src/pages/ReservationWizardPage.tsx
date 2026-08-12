@@ -123,6 +123,20 @@ export const ReservationWizardPage: React.FC = () => {
     setStep(4);
   };
 
+  const goToStep3 = async () => {
+    setStep(3);
+    // Refrescar disponibilidad de canchas
+    try {
+      setLoading(true);
+      const slotsData = await courtService.getAvailableSlots();
+      setAvailableSlots(slotsData);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleToggleSlot = (slot: Slot) => {
     const maxAllowed = gameMode === 'SUPER_8' ? 2 : 1;
     const isSelected = selectedSlots.some(s => s.id === slot.id);
@@ -266,7 +280,7 @@ export const ReservationWizardPage: React.FC = () => {
               />
             </div>
 
-            <IonButton expand="block" onClick={() => setStep(3)}>
+            <IonButton expand="block" onClick={goToStep3}>
               Ver Horarios Disponibles
             </IonButton>
             <IonButton expand="block" fill="clear" onClick={() => setStep(1)}>
@@ -409,7 +423,7 @@ export const ReservationWizardPage: React.FC = () => {
               {reserving ? <IonSpinner name="dots" /> : 'Confirmar Reserva'}
             </IonButton>
             
-            <IonButton expand="block" fill="clear" onClick={() => setStep(3)} disabled={reserving}>
+            <IonButton expand="block" fill="clear" onClick={goToStep3} disabled={reserving}>
               Cambiar Hora
             </IonButton>
           </div>
