@@ -37,7 +37,6 @@ export const HomeDashboard: React.FC = () => {
   const history = useHistory();
   const [courts, setCourts] = useState<Court[]>([]);
   const [activeReservationsCount, setActiveReservationsCount] = useState<number>(0);
-  const [userCategory, setUserCategory] = useState<string>('Categoría');
   const [userName, setUserName] = useState<string>('Jugador');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +61,6 @@ export const HomeDashboard: React.FC = () => {
       }).length;
 
       setActiveReservationsCount(activeCount);
-      setUserCategory(profileRes.data.category || 'Categoría 4ª');
       setUserName(profileRes.data.name || 'Jugador');
     } catch (err: any) {
       console.error('Error al cargar datos del Dashboard:', err);
@@ -166,11 +164,10 @@ export const HomeDashboard: React.FC = () => {
               </IonButton>
             </div>
 
-            {/* Tarjetas de Estadísticas / Resumen */}
             <IonGrid style={{ padding: '0', marginBottom: '16px' }}>
               <IonRow>
-                <IonCol size="6">
-                  <IonCard style={{ margin: '0 8px 16px 0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <IonCol size="12">
+                  <IonCard style={{ margin: '0 0 16px 0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                     <IonCardContent style={{ padding: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                         <IonIcon icon={calendarOutline} color="secondary" style={{ fontSize: '24px', marginRight: '8px' }} />
@@ -178,19 +175,6 @@ export const HomeDashboard: React.FC = () => {
                       </div>
                       <h2 style={{ margin: '0', fontSize: '22px', fontWeight: '800', color: 'var(--ion-text-color)' }}>
                         {activeReservationsCount} Activa{activeReservationsCount !== 1 ? 's' : ''}
-                      </h2>
-                    </IonCardContent>
-                  </IonCard>
-                </IonCol>
-                <IonCol size="6">
-                  <IonCard style={{ margin: '0 0 16px 8px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                    <IonCardContent style={{ padding: '16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                        <IonIcon icon={trophyOutline} color="tertiary" style={{ fontSize: '24px', marginRight: '8px' }} />
-                        <IonText color="medium" style={{ fontSize: '12px', fontWeight: '600' }}>Nivel</IonText>
-                      </div>
-                      <h2 style={{ margin: '0', fontSize: '22px', fontWeight: '800', color: 'var(--ion-text-color)' }}>
-                        {userCategory}
                       </h2>
                     </IonCardContent>
                   </IonCard>
