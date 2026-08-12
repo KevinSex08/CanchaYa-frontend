@@ -12,7 +12,7 @@ export const reservationService = {
    */
   createReservation: async (payload: CreateReservationPayload): Promise<Reservation> => {
     try {
-      const response = await api.post<Reservation>('/reservations/', payload);
+      const response = await api.post<Reservation>('/reservations', payload);
       return response.data;
     } catch (error) {
       console.error('Error al crear reserva:', error);
@@ -40,7 +40,7 @@ export const reservationService = {
    */
   cancelReservation: async (id: number): Promise<Reservation> => {
     try {
-      const response = await api.patch<Reservation>(`/reservations/${id}/cancel/`);
+      const response = await api.patch<Reservation>(`/reservations/${id}/cancel`);
       return response.data;
     } catch (error) {
       console.error(`Error al cancelar la reserva ${id}:`, error);

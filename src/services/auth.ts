@@ -14,10 +14,16 @@ export const authService = {
    */
   login: async (credentials: LoginCredentials): Promise<CognitoLoginResponse> => {
     try {
-      await signIn({
+      const signInResult = await signIn({
         username: credentials.username,
         password: credentials.password
       });
+
+      console.log('✅ Resultado crudo de Cognito signIn:', signInResult);
+
+      if (!signInResult.isSignedIn) {
+        console.warn('⚠️ ATENCIÓN: El usuario NO completó el login. Paso actual:', signInResult.nextStep);
+      }
 
       return {
         AuthenticationResult: {
@@ -50,6 +56,22 @@ export const authService = {
       });
     } catch (error: any) {
       console.error('Error durante el registro en Cognito (Amplify):', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Confirma el registro del usuario con el código OTP
+   */
+  confirmRegister: async (username: string, code: string): Promise<void> => {
+    try {
+      const { confirmSignUp } = await import('aws-amplify/auth');
+      await confirmSignUp({
+        username,
+        confirmationCode: code
+      });
+    } catch (error: any) {
+      console.error('Error al confirmar registro:', error);
       throw error;
     }
   },
