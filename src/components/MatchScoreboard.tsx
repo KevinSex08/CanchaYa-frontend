@@ -101,7 +101,7 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
     setErrorMessage(null);
     try {
       if (mode === 'CLASSIC') {
-        const winner = scoreTeam1 > scoreTeam2 ? 'TEAM_1' : scoreTeam1 < scoreTeam2 ? 'TEAM_2' : 'DRAW';
+        const winner = scoreTeam1 > scoreTeam2 ? 'TEAM_A' : scoreTeam1 < scoreTeam2 ? 'TEAM_B' : 'NONE';
         await gameService.finishGameRecord(reservationId, {
           teamAScore: scoreTeam1,
           teamBScore: scoreTeam2,
@@ -129,11 +129,12 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
           leaderboard
         });
 
-        const winner = leaderboard.length > 0 ? leaderboard[0].playerName : 'NONE';
-
+        // Para Super 8 no usamos TEAM_A ni TEAM_B
         await gameService.finishGameRecord(reservationId, {
+          teamAScore: 0,
+          teamBScore: 0,
           additionalStats,
-          winnerTeam: winner
+          winnerTeam: 'NONE'
         });
       }
       setShowSuccessAlert(true);
