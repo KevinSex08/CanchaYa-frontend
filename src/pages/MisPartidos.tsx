@@ -21,7 +21,9 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  RefresherEventDetail
+  RefresherEventDetail,
+  IonAlert,
+  IonToast
 } from '@ionic/react';
 import {
   calendarOutline,
@@ -43,6 +45,11 @@ export const MisPartidos: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [segment, setSegment] = useState<'actives' | 'history'>('actives');
+
+  const [showCancelAlert, setShowCancelAlert] = useState<boolean>(false);
+  const [selectedReservationId, setSelectedReservationId] = useState<number | null>(null);
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [showToast, setShowToast] = useState<boolean>(false);
 
   const fetchReservations = async () => {
     setLoading(true);
@@ -78,16 +85,24 @@ export const MisPartidos: React.FC = () => {
     event.detail.complete();
   };
 
-  const handleCancel = async (id: number) => {
-    if (window.confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
-      try {
-        await api.patch(`/reservations/${id}/cancel`);
-        alert('Reserva cancelada con éxito');
-        fetchReservations();
-      } catch (err: any) {
-        console.error('Error al cancelar la reserva:', err);
-        alert('Error al cancelar la reserva. Por favor intenta más tarde.');
-      }
+  const confirmCancel = (id: number) => {
+    setSelectedReservationId(id);
+    setShowCancelAlert(true);
+  };
+
+  const processCancel = async () => {
+    if (!selectedReservationId) return;
+    try {
+      await api.patch(`/reservations/${selectedReservationId}/cancel`);
+      setToastMessage('Reserva cancelada con éxito');
+      setShowToast(true);
+      fetchReservations();
+    } catch (err: any) {
+      console.error('Error al cancelar la reserva:', err);
+      setToastMessage('Error al cancelar la reserva. Por favor intenta más tarde.');
+      setShowToast(true);
+    } finally {
+      setSelectedReservationId(null);
     }
   };
 
@@ -130,9 +145,9 @@ export const MisPartidos: React.FC = () => {
       <IonHeader translucent>
         <IonToolbar color="primary">
           <IonButtons slot="start">
-            <IonMenuButton />
+            <IonMenuButton style={{ color: '#ffffff' }} />
           </IonButtons>
-          <IonTitle style={{ fontWeight: '800' }}>Mis Partidos</IonTitle>
+          <IonTitle style={{ fontWeight: '800', color: '#ffffff' }}>Mis Partidos</IonTitle>
         </IonToolbar>
         
         {/* Barra de Segmentos Estilizada */}
@@ -310,7 +325,7 @@ export const MisPartidos: React.FC = () => {
                           color="danger" 
                           size="small"
                           style={{ '--border-radius': '6px', fontSize: '12px', fontWeight: '600', margin: '0' }}
-                          onClick={() => handleCancel(reservation.id)}
+                          onClick={() => confirmCancel(reservation.id)}
                         >
                           Cancelar Turno
                         </IonButton>
@@ -337,6 +352,40 @@ export const MisPartidos: React.FC = () => {
           </IonList>
         )}
       </IonContent>
+
+      <IonAlert
+        isOpen={showCancelAlert}
+        onDidDismiss={() => setShowCancelAlert(false)}
+        header="Cancelar Reserva"
+        message="¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer."
+        buttons={[
+          {
+            text: 'No, mantener',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              setSelectedReservationId(null);
+            }
+          },
+          {
+            text: 'Sí, cancelar',
+            handler: () => {
+              processCancel();
+            }
+          }
+        ]}
+      />
+
+      <IonToast
+        isOpen={showToast}
+        onDidDismiss={() => setShowToast(false)}
+        message={toastMessage}
+        duration={3000}
+        color={toastMessage.includes('éxito') ? 'success' : 'danger'}
+        position="top"
+      />
     </IonPage>
   );
 };
+
+export default MisPartidos;
