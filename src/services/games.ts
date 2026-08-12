@@ -21,13 +21,12 @@ export const gameService = {
   },
 
   /**
-   * Finaliza el partido y registra el marcador (score) final de pádel
-   * PATCH /game-records/:id/finish
-   * Payload: { scoreTeam1: number, scoreTeam2: number }
+   * Finaliza el partido y registra el marcador (score) dinámico
+   * PUT /game-records/:id/score
    */
   finishGameRecord: async (id: number, payload: FinishGamePayload): Promise<GameRecord> => {
     try {
-      const response = await api.patch<GameRecord>(`/game-records/${id}/finish/`, payload);
+      const response = await api.put<GameRecord>(`/game-records/${id}/score`, payload);
       return response.data;
     } catch (error) {
       console.error(`Error al finalizar el partido ${id}:`, error);
