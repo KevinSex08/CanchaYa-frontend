@@ -85,7 +85,7 @@ export const AdminScoreboardPage: React.FC = () => {
                 Ajusta los marcadores y finaliza el registro.
               </p>
               <div style={{ marginTop: '12px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #e9ecef' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: '13px', fontWeight: 'bold' }}>Titular: {reservation.cognitoUserId}</p>
+                <p style={{ margin: '0 0 4px 0', fontSize: '13px', fontWeight: 'bold' }}>Titular: {reservation.userId}</p>
                 <p style={{ margin: '0', fontSize: '13px', color: 'var(--ion-color-medium)' }}>
                   Modo: {reservation.gameType === 'SUPER_8' ? 'Súper 8' : 'Clásico'}
                 </p>
@@ -96,7 +96,7 @@ export const AdminScoreboardPage: React.FC = () => {
               <MatchScoreboard
                 reservationId={reservation.id!}
                 courtName={reservation.slot?.court?.name || `Cancha ID ${reservation.slot?.courtId}`}
-                gameType={reservation.gameType}
+                gameType={reservation.gameType === 'SUPER_8' ? 'SUPER_8' : 'CLASSIC'}
                 onFinished={handleMatchFinished}
               />
             </div>
