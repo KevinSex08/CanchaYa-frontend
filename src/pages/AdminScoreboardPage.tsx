@@ -25,18 +25,25 @@ export const AdminScoreboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchReservation = async () => {
+      setLoading(true);
+      setError(null);
       if (!id) {
-        // Cargar todas las reservas
+        // Cargar todas las reservas y usuarios
         try {
-          const response = await adminService.getAllReservations();
-          setAllReservations(response.data || response);
+          const [resResponse, usersResponse] = await Promise.all([
+            adminService.getAllReservations(),
+            adminService.getAllUsers()
+          ]);
+          setAllReservations(resResponse.data || resResponse);
+          setUsers(usersResponse.data || usersResponse);
         } catch (e: any) {
           console.error("Error al obtener reservas del backend:", e.response?.data);
           const backendMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
-          setError(`Error del servidor (500): ${backendMsg}. Pide al backend que revise los logs de la ruta /reservations.`);
+          setError(`Error del servidor (500): ${backendMsg}. Pide al backend que revise los logs.`);
         } finally {
           setLoading(false);
         }
@@ -44,11 +51,15 @@ export const AdminScoreboardPage: React.FC = () => {
       }
       try {
         const resId = parseInt(id, 10);
-        const data = await reservationService.getReservationById(resId);
+        const [data, usersResponse] = await Promise.all([
+          reservationService.getReservationById(resId),
+          adminService.getAllUsers()
+        ]);
         setReservation(data);
+        setUsers(usersResponse.data || usersResponse);
       } catch (e: any) {
-        console.error("Error al obtener la reserva:", e);
-        setError("No se pudo cargar la información de la reserva. Verifique que exista.");
+        console.error("Error al obtener la reserva o usuarios:", e);
+        setError("No se pudo cargar la información de la reserva o de los usuarios.");
       } finally {
         setLoading(false);
       }
@@ -94,23 +105,27 @@ export const AdminScoreboardPage: React.FC = () => {
             {allReservations.length === 0 ? (
               <IonText color="medium"><p>No hay partidos activos en este momento.</p></IonText>
             ) : (
-              allReservations.map(res => (
-                <div 
-                  key={res.id} 
-                  style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                  onClick={() => history.push(`/admin/scoreboard/${res.id}`)}
-                >
-                  <div>
-                    <h3 style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>Reserva #{res.id}</h3>
-                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Usuario: {res.cognitoUserId}</p>
-                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Cancha: {res.slot?.court?.name || res.slot?.courtId}</p>
+              allReservations.map(res => {
+                const userObj = users.find(u => u.cognitoSub === res.cognitoUserId);
+                const nombreReal = userObj ? userObj.name : "Usuario Desconocido";
+                return (
+                  <div 
+                    key={res.id} 
+                    style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => history.push(`/admin/scoreboard/${res.id}`)}
+                  >
+                    <div>
+                      <h3 style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>Reserva #{res.id}</h3>
+                      <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Usuario: {nombreReal}</p>
+                      <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Cancha: {res.slot?.court?.name || res.slot?.courtId}</p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <IonText color="primary" style={{ fontWeight: 'bold', fontSize: '14px' }}>{res.gameType}</IonText>
+                      <p style={{ margin: '0', fontSize: '12px', color: 'gray' }}>{res.status}</p>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <IonText color="primary" style={{ fontWeight: 'bold', fontSize: '14px' }}>{res.gameType}</IonText>
-                    <p style={{ margin: '0', fontSize: '12px', color: 'gray' }}>{res.status}</p>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         ) : reservation ? (
@@ -123,7 +138,7 @@ export const AdminScoreboardPage: React.FC = () => {
                 Ajusta los marcadores y finaliza el registro.
               </p>
               <div style={{ marginTop: '12px', padding: '12px', borderRadius: '8px', border: '1px solid var(--ion-color-step-150, #e9ecef)' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>Titular: {reservation.cognitoUserId}</p>
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>Titular: {users.find(u => u.cognitoSub === reservation.cognitoUserId)?.name || "Usuario Desconocido"}</p>
                 <p style={{ margin: '0', fontSize: '14px', color: 'var(--ion-color-medium)' }}>
                   Modo: {reservation.gameType === 'SUPER_8' ? 'Súper 8' : 'Clásico'}
                 </p>
