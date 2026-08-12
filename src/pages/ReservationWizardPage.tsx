@@ -16,10 +16,12 @@ import {
   IonText,
   IonToast,
   IonCard,
-  IonCardContent
+  IonCardContent,
+  IonDatetime,
+  IonCheckbox
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { calendarOutline, timeOutline, checkmarkCircleOutline, alertCircleOutline } from 'ionicons/icons';
+import { calendarOutline, timeOutline, checkmarkCircleOutline, alertCircleOutline, tennisballOutline } from 'ionicons/icons';
 import { courtService, reservationService, Slot, Court } from '../services';
 
 export const ReservationWizardPage: React.FC = () => {
@@ -28,6 +30,9 @@ export const ReservationWizardPage: React.FC = () => {
   // Estados del Wizard
   const [step, setStep] = useState<number>(1);
   const [gameMode, setGameMode] = useState<'CLASSIC' | 'SUPER_8'>('CLASSIC');
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString());
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedSlots, setSelectedSlots] = useState<Slot[]>([]);
   
   // Datos
   const [availableSlots, setAvailableSlots] = useState<Slot[]>([]);
@@ -35,71 +40,106 @@ export const ReservationWizardPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [reserving, setReserving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
   const [showToast, setShowToast] = useState(false);
-  
-  // Selección
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedSlots, setSelectedSlots] = useState<Slot[]>([]);
 
   useEffect(() => {
-    if (step === 2) {
-      fetchData();
-    }
-  }, [step]);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     try {
       const [slotsData, courtsData] = await Promise.all([
-        courtService.getAvailableSlots(), // Sin courtId para traer todos
+        courtService.getAvailableSlots(), // Trae todos los slots
         courtService.getCourts()
       ]);
       setAvailableSlots(slotsData);
       setCourts(courtsData);
     } catch (err: any) {
       console.error('Error fetching data:', err);
-      setError('Error al cargar horarios disponibles. Inténtalo de nuevo.');
+      setError('Error al cargar datos. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Agrupar slots por hora de inicio (para mostrarlos en la UI)
-  const slotsByTime = availableSlots.reduce((acc, slot) => {
-    const time = slot.startTime.substring(0, 5); // ej. "10:00"
-    if (!acc[time]) {
-      acc[time] = [];
+  // 1. Helper para parsear la fecha/hora del slot robustamente
+  const getSlotDateTime = (startTime: string) => {
+    try {
+      if (startTime.includes('T')) {
+        return {
+          date: startTime.split('T')[0],
+          time: startTime.split('T')[1].substring(0, 5)
+        };
+      }
+      // Fallback si el backend solo envía "HH:mm" (asumimos hoy)
+      const today = new Date().toISOString().split('T')[0];
+      return { date: today, time: startTime.substring(0, 5) };
+    } catch (e) {
+      return { date: '', time: '' };
     }
+  };
+
+  // 2. Filtrar slots por fecha seleccionada y isAvailable === true
+  const targetDateStr = selectedDate.split('T')[0]; // "YYYY-MM-DD"
+  
+  const slotsOnDate = availableSlots.filter(slot => {
+    if (!slot.isAvailable) return false;
+    const { date } = getSlotDateTime(slot.startTime);
+    return date === targetDateStr;
+  });
+
+  // 3. Agrupar por hora de inicio
+  const slotsByTime = slotsOnDate.reduce((acc, slot) => {
+    const { time } = getSlotDateTime(slot.startTime);
+    if (!acc[time]) acc[time] = [];
     acc[time].push(slot);
     return acc;
   }, {} as Record<string, Slot[]>);
 
-  // Ordenar las horas
   const sortedTimes = Object.keys(slotsByTime).sort();
+
+  // 4. Obtener slots para la hora seleccionada (Paso 4)
+  const slotsAtSelectedTime = selectedTime ? slotsByTime[selectedTime] || [] : [];
 
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);
-    
-    // Auto-asignación de canchas
-    const slotsAtThisTime = slotsByTime[time];
-    const courtsRequired = gameMode === 'SUPER_8' ? 2 : 1;
+    setSelectedSlots([]); // Resetear canchas seleccionadas al cambiar la hora
+    setStep(4);
+  };
 
-    if (slotsAtThisTime.length < courtsRequired) {
-      setError(`No hay suficientes canchas disponibles a las ${time} para el modo seleccionado.`);
-      setSelectedSlots([]);
-      return;
+  const handleToggleSlot = (slot: Slot) => {
+    const maxAllowed = gameMode === 'SUPER_8' ? 2 : 1;
+    const isSelected = selectedSlots.some(s => s.id === slot.id);
+
+    if (isSelected) {
+      setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
+    } else {
+      if (selectedSlots.length < maxAllowed) {
+        setSelectedSlots([...selectedSlots, slot]);
+      } else {
+        // Reemplazar si ya alcanzó el máximo en Clásico, o ignorar en Super 8
+        if (maxAllowed === 1) {
+          setSelectedSlots([slot]);
+        }
+      }
     }
+  };
 
-    // Seleccionar las primeras N canchas disponibles
-    setSelectedSlots(slotsAtThisTime.slice(0, courtsRequired));
-    setError(null);
-    setStep(3); // Avanzar a confirmación
+  const autoAssignSuper8 = () => {
+    if (slotsAtSelectedTime.length >= 2) {
+      setSelectedSlots(slotsAtSelectedTime.slice(0, 2));
+    }
   };
 
   const handleReserve = async () => {
-    if (selectedSlots.length === 0) return;
+    const required = gameMode === 'SUPER_8' ? 2 : 1;
+    if (selectedSlots.length !== required) {
+      setError(`Debes seleccionar exactamente ${required} cancha(s) para este modo.`);
+      return;
+    }
+
     setReserving(true);
     setError(null);
     
@@ -122,10 +162,6 @@ export const ReservationWizardPage: React.FC = () => {
     }
   };
 
-  const getCourtName = (courtId: number) => {
-    return courts.find(c => c.id === courtId)?.name || `Cancha ${courtId}`;
-  };
-
   return (
     <IonPage>
       <IonHeader>
@@ -141,17 +177,18 @@ export const ReservationWizardPage: React.FC = () => {
         
         {/* Progreso del Wizard */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', gap: '8px' }}>
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <div key={i} style={{ 
-              width: '30px', 
-              height: '30px', 
+              width: '28px', 
+              height: '28px', 
               borderRadius: '50%', 
               background: step >= i ? 'var(--ion-color-primary)' : '#ccc',
               color: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: '14px'
             }}>
               {i}
             </div>
@@ -161,12 +198,12 @@ export const ReservationWizardPage: React.FC = () => {
         {/* PASO 1: Modalidad */}
         {step === 1 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px', color: 'var(--ion-color-dark)' }}>
               Elige tu Modo de Juego
             </h2>
             
             <IonCard 
-              onClick={() => setGameMode('CLASSIC')}
+              onClick={() => { setGameMode('CLASSIC'); setStep(2); }}
               style={{ 
                 border: gameMode === 'CLASSIC' ? '2px solid var(--ion-color-primary)' : '2px solid transparent',
                 marginBottom: '16px',
@@ -180,7 +217,7 @@ export const ReservationWizardPage: React.FC = () => {
             </IonCard>
 
             <IonCard 
-              onClick={() => setGameMode('SUPER_8')}
+              onClick={() => { setGameMode('SUPER_8'); setStep(2); }}
               style={{ 
                 border: gameMode === 'SUPER_8' ? '2px solid var(--ion-color-secondary)' : '2px solid transparent',
                 marginBottom: '24px',
@@ -192,27 +229,52 @@ export const ReservationWizardPage: React.FC = () => {
                 <p style={{ color: 'var(--ion-color-medium)' }}>Competencia dinámica (8 jugadores). Requiere 2 canchas simultáneas.</p>
               </IonCardContent>
             </IonCard>
+          </div>
+        )}
 
-            <IonButton expand="block" onClick={() => setStep(2)}>
-              Continuar a Horarios
+        {/* PASO 2: Selección de Fecha */}
+        {step === 2 && (
+          <div className="animate-fade-in">
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+              Selecciona la Fecha
+            </h2>
+            <p style={{ textAlign: 'center', color: 'var(--ion-color-medium)', marginBottom: '20px' }}>
+              ¿Cuándo deseas jugar?
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+              <IonDatetime 
+                presentation="date" 
+                value={selectedDate}
+                onIonChange={e => setSelectedDate(e.detail.value as string)}
+                min={new Date().toISOString().split('T')[0]} // No permitir fechas pasadas
+                style={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              />
+            </div>
+
+            <IonButton expand="block" onClick={() => setStep(3)}>
+              Ver Horarios Disponibles
+            </IonButton>
+            <IonButton expand="block" fill="clear" onClick={() => setStep(1)}>
+              Atrás
             </IonButton>
           </div>
         )}
 
-        {/* PASO 2: Selección de Hora */}
-        {step === 2 && (
+        {/* PASO 3: Selección de Hora */}
+        {step === 3 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' }}>
-              Horarios Disponibles
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+              Horarios para el {targetDateStr}
             </h2>
-            <p style={{ textAlign: 'center', color: 'var(--ion-color-medium)', marginBottom: '20px' }}>
+            <p style={{ textAlign: 'center', color: 'var(--ion-color-dark)', marginBottom: '20px' }}>
               Buscando para modo {gameMode === 'CLASSIC' ? 'Clásico (1 Cancha)' : 'Súper 8 (2 Canchas)'}
             </p>
 
             {loading ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 <IonSpinner name="crescent" color="primary" />
-                <p>Cargando disponibilidad global...</p>
+                <p style={{ color: 'var(--ion-color-dark)', marginTop: '16px' }}>Cargando disponibilidad global...</p>
               </div>
             ) : error ? (
               <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -223,7 +285,7 @@ export const ReservationWizardPage: React.FC = () => {
             ) : sortedTimes.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 <IonIcon icon={calendarOutline} style={{ fontSize: '48px', color: '#ccc' }} />
-                <p>No hay horarios disponibles en este momento.</p>
+                <p style={{ color: 'var(--ion-color-dark)', marginTop: '16px' }}>No hay canchas libres en esta fecha.</p>
               </div>
             ) : (
               <IonList style={{ background: 'transparent' }}>
@@ -248,7 +310,7 @@ export const ReservationWizardPage: React.FC = () => {
                     >
                       <IonIcon icon={timeOutline} slot="start" color={isAvailable ? 'primary' : 'medium'} />
                       <IonLabel>
-                        <h3 style={{ fontWeight: 'bold', fontSize: '18px' }}>{time}</h3>
+                        <h3 style={{ fontWeight: 'bold', fontSize: '18px', color: 'var(--ion-color-dark)' }}>{time}</h3>
                         <p style={{ color: isAvailable ? 'var(--ion-color-success)' : 'var(--ion-color-danger)' }}>
                           {slots.length} cancha{slots.length !== 1 ? 's' : ''} libre{slots.length !== 1 ? 's' : ''}
                         </p>
@@ -259,41 +321,65 @@ export const ReservationWizardPage: React.FC = () => {
               </IonList>
             )}
             
-            <IonButton expand="block" fill="clear" onClick={() => setStep(1)}>
-              Atrás
+            <IonButton expand="block" fill="clear" onClick={() => setStep(2)}>
+              Cambiar Fecha
             </IonButton>
           </div>
         )}
 
-        {/* PASO 3: Confirmación */}
-        {step === 3 && (
+        {/* PASO 4: Selección de Canchas y Confirmación */}
+        {step === 4 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-              Confirmar Reserva
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+              Elige tu{gameMode === 'SUPER_8' ? 's' : ''} Cancha{gameMode === 'SUPER_8' ? 's' : ''}
             </h2>
-            
-            <IonCard style={{ marginBottom: '24px' }}>
-              <IonCardContent>
-                <h3 style={{ fontWeight: 'bold', color: 'var(--ion-color-dark)', marginBottom: '12px' }}>Resumen:</h3>
-                
-                <p><strong>Modo:</strong> {gameMode === 'CLASSIC' ? 'Pádel Clásico' : 'Súper 8'}</p>
-                <p><strong>Hora:</strong> {selectedTime}</p>
-                
-                <div style={{ marginTop: '16px' }}>
-                  <p><strong>Canchas asignadas automáticamente:</strong></p>
-                  <ul style={{ paddingLeft: '20px', marginTop: '8px' }}>
-                    {selectedSlots.map(slot => (
-                      <li key={slot.id} style={{ marginBottom: '4px' }}>
-                        {getCourtName(slot.courtId)} (ID: {slot.courtId})
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </IonCardContent>
-            </IonCard>
+            <p style={{ textAlign: 'center', color: 'var(--ion-color-dark)', marginBottom: '20px' }}>
+              Horario: {selectedTime} | Selecciona {gameMode === 'CLASSIC' ? '1 cancha' : '2 canchas'}
+            </p>
+
+            {gameMode === 'SUPER_8' && (
+               <IonButton expand="block" fill="outline" size="small" onClick={autoAssignSuper8} style={{ marginBottom: '16px' }}>
+                 Auto-seleccionar 2 canchas aleatorias
+               </IonButton>
+            )}
+
+            <IonList style={{ background: 'transparent' }}>
+              {slotsAtSelectedTime.map(slot => {
+                const isSelected = selectedSlots.some(s => s.id === slot.id);
+                const court = courts.find(c => c.id === slot.courtId);
+                return (
+                  <IonItem 
+                    key={slot.id} 
+                    button 
+                    onClick={() => handleToggleSlot(slot)}
+                    style={{ 
+                      '--background': 'white', 
+                      borderRadius: '12px', 
+                      marginBottom: '10px',
+                      border: isSelected ? '2px solid var(--ion-color-primary)' : '2px solid transparent'
+                    }}
+                    lines="none"
+                  >
+                    <IonIcon icon={tennisballOutline} slot="start" color={isSelected ? 'primary' : 'medium'} />
+                    <IonLabel>
+                      <h3 style={{ fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>{court?.name || `Cancha ${slot.courtId}`}</h3>
+                      <p style={{ color: 'var(--ion-color-medium)' }}>
+                        {court?.surface ? court.surface.toUpperCase() : 'PÁDEL STANDARD'}
+                      </p>
+                    </IonLabel>
+                    <IonCheckbox 
+                      slot="end" 
+                      checked={isSelected} 
+                      onIonChange={() => handleToggleSlot(slot)} 
+                      onClick={(e) => e.stopPropagation()} 
+                    />
+                  </IonItem>
+                );
+              })}
+            </IonList>
 
             {error && (
-              <IonText color="danger" style={{ display: 'block', textAlign: 'center', marginBottom: '16px' }}>
+              <IonText color="danger" style={{ display: 'block', textAlign: 'center', margin: '16px 0' }}>
                 {error}
               </IonText>
             )}
@@ -301,13 +387,14 @@ export const ReservationWizardPage: React.FC = () => {
             <IonButton 
               expand="block" 
               onClick={handleReserve}
-              disabled={reserving}
+              disabled={reserving || selectedSlots.length !== (gameMode === 'SUPER_8' ? 2 : 1)}
               color="success"
+              style={{ marginTop: '24px' }}
             >
               {reserving ? <IonSpinner name="dots" /> : 'Confirmar Reserva'}
             </IonButton>
             
-            <IonButton expand="block" fill="clear" onClick={() => setStep(2)} disabled={reserving}>
+            <IonButton expand="block" fill="clear" onClick={() => setStep(3)} disabled={reserving}>
               Cambiar Hora
             </IonButton>
           </div>
