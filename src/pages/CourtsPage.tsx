@@ -10,7 +10,7 @@ import {
   IonIcon,
   IonMenuButton
 } from '@ionic/react';
-import { personCircleOutline, shieldOutline } from 'ionicons/icons';
+import { personCircleOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { CourtList } from '../components/CourtList';
 
@@ -34,10 +34,6 @@ export const CourtsPage: React.FC = () => {
     history.push(`/app/reservar`);
   };
 
-  const goToAdmin = () => {
-    history.push('/admin/scoreboard');
-  };
-
   return (
     <IonPage id="courts-page">
       <IonHeader translucent>
@@ -48,11 +44,6 @@ export const CourtsPage: React.FC = () => {
           <IonTitle style={{ fontWeight: '800', letterSpacing: '0.5px', color: '#ffffff' }}>CanchaYA</IonTitle>
           
           <IonButtons slot="end">
-            {/* Botón para navegar al panel administrativo (útil para pruebas) */}
-            <IonButton onClick={goToAdmin} title="Panel Admin">
-              <IonIcon slot="icon-only" icon={shieldOutline} />
-            </IonButton>
-            
             <IonButton onClick={() => history.push('/app/perfil')} title="Mi Perfil">
               <IonIcon slot="icon-only" icon={personCircleOutline} style={{ color: '#ffffff' }} />
             </IonButton>
