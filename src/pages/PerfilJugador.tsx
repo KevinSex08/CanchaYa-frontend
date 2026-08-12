@@ -17,8 +17,7 @@ import {
   IonButton
 } from '@ionic/react';
 import {
-  logOutOutline,
-  ribbonOutline
+  logOutOutline
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { authService } from '../services';
@@ -61,7 +60,6 @@ export const PerfilJugador: React.FC = () => {
 
   const name = playerInfo?.name || 'Cargando...';
   const email = playerInfo?.email || '';
-  const category = playerInfo?.category || 'Amateur';
   // Generar URL de avatar genérico basado en el nombre (ui-avatars)
   const avatarUrl = playerInfo?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
@@ -115,21 +113,6 @@ export const PerfilJugador: React.FC = () => {
               <IonText color="medium" style={{ fontSize: '14px', marginTop: '4px' }}>
                 {email}
               </IonText>
-              
-              <div style={{
-                marginTop: '10px',
-                padding: '5px 12px',
-                background: 'var(--ion-color-primary-tint)',
-                borderRadius: '20px',
-                color: '#ffffff',
-                fontSize: '12px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center'
-              }}>
-                <IonIcon icon={ribbonOutline} style={{ marginRight: '6px' }} />
-                {category}
-              </div>
             </div>
 
             {/* Opciones de Cuenta */}
