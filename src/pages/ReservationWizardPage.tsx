@@ -64,30 +64,42 @@ export const ReservationWizardPage: React.FC = () => {
     }
   };
 
-  // 1. Helper para parsear la fecha/hora del slot robustamente
-  const getSlotDateTime = (startTime: string) => {
+  // 1. Helper para parsear la fecha/hora del slot robustamente (Soporta Arrays de Spring Boot y Strings)
+  const getSlotDateTime = (startTime: any) => {
     try {
-      // Soportar tanto '2026-08-13T10:00:00Z' como '2026-08-13 10:00:00'
-      const normalized = startTime.replace(' ', 'T');
+      if (Array.isArray(startTime)) {
+        const [year, month, day, hour, minute] = startTime;
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return {
+          date: `${year}-${pad(month)}-${pad(day)}`,
+          time: `${pad(hour)}:${pad(minute || 0)}`
+        };
+      }
+
+      const str = String(startTime);
+      const normalized = str.replace(' ', 'T');
       if (normalized.includes('T')) {
         return {
           date: normalized.split('T')[0],
           time: normalized.split('T')[1].substring(0, 5)
         };
       }
-      // Fallback si el backend solo envía "HH:mm" (asumimos hoy)
+      
       const today = new Date().toISOString().split('T')[0];
-      return { date: today, time: startTime.substring(0, 5) };
+      return { date: today, time: str.substring(0, 5) };
     } catch (e) {
       return { date: '', time: '' };
     }
   };
 
-  // 2. Filtrar slots por fecha seleccionada y isAvailable === true
+  // 2. Filtrar slots por fecha seleccionada y availability
   const targetDateStr = selectedDate.split('T')[0]; // "YYYY-MM-DD"
   
   const slotsOnDate = availableSlots.filter(slot => {
-    if (!slot.isAvailable) return false;
+    // Soportar ambas propiedades ('available' o 'isAvailable')
+    const isAv = slot.isAvailable !== undefined ? slot.isAvailable : (slot as any).available;
+    if (isAv === false) return false; // Ignorar si explícitamente es false
+
     const { date } = getSlotDateTime(slot.startTime);
     return date === targetDateStr;
   });
