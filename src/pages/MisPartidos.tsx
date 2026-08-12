@@ -198,9 +198,20 @@ export const MisPartidos: React.FC = () => {
         ) : (
           <IonList style={{ background: 'transparent' }}>
             {filteredReservations.map((reservation) => {
-              const statusColor = reservation.status === 'CONFIRMED' ? 'success' : 'danger';
-              const statusLabel = reservation.status === 'CONFIRMED' ? 'Confirmado' : 'Cancelado';
-              const statusIcon = reservation.status === 'CONFIRMED' ? checkmarkCircleOutline : closeCircleOutline;
+              let statusColor = 'warning';
+              let statusLabel = 'Pendiente';
+              let statusIcon = timeOutline;
+
+              if (reservation.status === 'CONFIRMED') {
+                statusColor = 'success';
+                statusLabel = 'Confirmado';
+                statusIcon = checkmarkCircleOutline;
+              } else if (reservation.status === 'CANCELLED') {
+                statusColor = 'danger';
+                statusLabel = 'Cancelado';
+                statusIcon = closeCircleOutline;
+              }
+
               const isIndoor = reservation.court?.type === 'indoor';
 
               return (

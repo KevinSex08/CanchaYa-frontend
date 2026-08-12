@@ -29,7 +29,7 @@ export interface Reservation {
   slotId: number;
   userId: string;
   gameType: GameType;
-  status: 'CONFIRMED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   createdAt: string;
   slot?: Slot;
   court?: Court;
