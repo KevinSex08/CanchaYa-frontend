@@ -21,21 +21,16 @@ import { CourtList } from '../components/CourtList';
 export const CourtsPage: React.FC = () => {
   const history = useHistory();
 
-  const handleSelectCourt = (courtId: number) => {
-    console.log(`[CourtsPage] Intentando reservar cancha: ${courtId}`);
-    
-    // Verificación de autenticación basada en localStorage según el requerimiento
+  const handleMakeReservation = () => {
+    // Verificación de autenticación
     const token = localStorage.getItem('cognito_access_token');
-    
     if (!token) {
-      // Si no hay token, el usuario no está autenticado, redirigir al login
       console.warn('Usuario no autenticado, redirigiendo al login...');
       history.push('/login');
       return;
     }
-
-    // Si está autenticado, continuar con el flujo de reserva
-    history.push(`/app/courts/${courtId}/slots`);
+    // Navegar al nuevo asistente de reservas
+    history.push(`/app/reservar`);
   };
 
   const goToAdmin = () => {
@@ -63,17 +58,28 @@ export const CourtsPage: React.FC = () => {
 
       <IonContent className="ion-padding">
         {/* Cabecera de bienvenida */}
-        <div style={{ padding: '8px 4px 16px 4px' }}>
-          <h1 style={{ margin: '0', fontSize: '26px', fontWeight: '800', color: 'var(--ion-text-color, #1a1a1a)' }}>
-            Reserva tu Cancha
-          </h1>
-          <p style={{ margin: '4px 0 0 0', color: 'var(--ion-color-medium, #666)', fontSize: '15px' }}>
-            Selecciona una de nuestras canchas profesionales de pádel para iniciar.
-          </p>
+        <div style={{ padding: '8px 4px 16px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ margin: '0', fontSize: '26px', fontWeight: '800', color: 'var(--ion-text-color, #1a1a1a)' }}>
+              Catálogo de Canchas
+            </h1>
+            <p style={{ margin: '4px 0 0 0', color: 'var(--ion-color-medium, #666)', fontSize: '15px' }}>
+              Conoce nuestras canchas profesionales de pádel.
+            </p>
+          </div>
         </div>
 
+        <IonButton 
+          expand="block" 
+          color="success" 
+          style={{ marginBottom: '24px', '--border-radius': '12px', height: '54px', fontWeight: 'bold', fontSize: '18px' }}
+          onClick={handleMakeReservation}
+        >
+          ¡Hacer una Reserva Nueva!
+        </IonButton>
+
         {/* Componente del catálogo de canchas */}
-        <CourtList onSelectCourt={handleSelectCourt} />
+        <CourtList onSelectCourt={handleMakeReservation} />
       </IonContent>
     </IonPage>
   );

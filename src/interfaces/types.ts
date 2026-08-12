@@ -36,8 +36,8 @@ export interface Reservation {
 }
 
 export interface CreateReservationPayload {
-  slotId: number;
-  gameType: string; // Ej. "DOUBLES" o "SINGLES"
+  slotIds: number[];
+  gameType: string; // Ej. "DOUBLES" o "SINGLES" o "SUPER_8"
 }
 
 export interface GameRecord {
@@ -48,6 +48,7 @@ export interface GameRecord {
   scoreTeam2?: number;
   startTime: string;
   endTime?: string;
+  additionalStats?: string;
 }
 
 export interface StartGamePayload {
@@ -55,8 +56,10 @@ export interface StartGamePayload {
 }
 
 export interface FinishGamePayload {
-  scoreTeam1: number;
-  scoreTeam2: number;
+  teamAScore?: number;
+  teamBScore?: number;
+  winnerTeam?: string;
+  additionalStats?: string; // JSON con los resultados de Super 8 u otros
 }
 
 /**
