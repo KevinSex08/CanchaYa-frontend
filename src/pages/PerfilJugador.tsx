@@ -5,11 +5,6 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardContent,
   IonList,
   IonItem,
   IonLabel,
@@ -22,15 +17,8 @@ import {
   IonButton
 } from '@ionic/react';
 import {
-  personOutline,
-  notificationsOutline,
-  lockClosedOutline,
-  helpCircleOutline,
   logOutOutline,
-  trophyOutline,
-  analyticsOutline,
-  ribbonOutline,
-  shieldOutline
+  ribbonOutline
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { authService } from '../services';
