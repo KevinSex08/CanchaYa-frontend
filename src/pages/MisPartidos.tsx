@@ -81,7 +81,7 @@ export const MisPartidos: React.FC = () => {
   const handleCancel = async (id: number) => {
     if (window.confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
       try {
-        await api.patch(`/reservations/${id}/cancel/`);
+        await api.patch(`/reservations/${id}/cancel`);
         alert('Reserva cancelada con éxito');
         fetchReservations();
       } catch (err: any) {
@@ -303,7 +303,7 @@ export const MisPartidos: React.FC = () => {
                     </IonGrid>
 
                     {/* Botones de acción contextual según el estado de la reserva */}
-                    {segment === 'actives' && reservation.status === 'CONFIRMED' && (
+                    {segment === 'actives' && (reservation.status === 'CONFIRMED' || reservation.status === 'PENDING') && (
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', gap: '8px' }}>
                         <IonButton 
                           fill="outline" 
