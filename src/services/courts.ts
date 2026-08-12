@@ -25,7 +25,7 @@ export const courtService = {
    */
   getAvailableSlots: async (params?: { courtId?: number; date?: string }): Promise<Slot[]> => {
     try {
-      const response = await api.get<Slot[]>('/slots/available/', { params });
+      const response = await api.get<Slot[]>('/slots/available', { params });
       return response.data;
     } catch (error) {
       console.error('Error al obtener horarios disponibles:', error);
@@ -39,7 +39,7 @@ export const courtService = {
    */
   getCourtDetails: async (id: number): Promise<Court> => {
     try {
-      const response = await api.get<Court>(`/courts/${id}/`);
+      const response = await api.get<Court>(`/courts/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error al obtener detalles de la cancha ${id}:`, error);

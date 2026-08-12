@@ -26,6 +26,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { HomeDashboard } from './pages/HomeDashboard';
 import { MisPartidos } from './pages/MisPartidos';
 import { PerfilJugador } from './pages/PerfilJugador';
+import CourtSlotsPage from './pages/CourtSlotsPage';
 
 /* Estilos CSS obligatorios del Core de Ionic */
 import '@ionic/react/css/core.css';
@@ -69,6 +70,7 @@ const App: React.FC = () => (
             <IonRouterOutlet>
               <Route exact path="/app/dashboard" component={HomeDashboard} />
               <Route exact path="/app/courts" component={CourtsPage} />
+              <Route exact path="/app/courts/:id/slots" component={CourtSlotsPage} />
               <Route exact path="/app/mis-partidos" component={MisPartidos} />
               <Route exact path="/app/perfil" component={PerfilJugador} />
               

@@ -35,7 +35,7 @@ export const CourtsPage: React.FC = () => {
     }
 
     // Si está autenticado, continuar con el flujo de reserva
-    history.push(`/courts/${courtId}/slots`);
+    history.push(`/app/courts/${courtId}/slots`);
   };
 
   const goToAdmin = () => {
