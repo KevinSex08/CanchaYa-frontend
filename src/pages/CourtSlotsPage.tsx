@@ -64,13 +64,13 @@ export const CourtSlotsPage: React.FC = () => {
     setSelectedSlot(slot);
   };
 
-  const handleReserve = async () => {
+  const handleReserve = async (alertData: any) => {
     if (!selectedSlot) return;
     setReserving(true);
     try {
       await reservationService.createReservation({
         slotId: selectedSlot.id,
-        gameType: 'FRIENDLY' // default gameType as required by payload
+        gameType: alertData // alertData es el 'value' del radio button seleccionado
       });
       setToastMessage('¡Reserva confirmada exitosamente!');
       setShowToast(true);
@@ -163,12 +163,29 @@ export const CourtSlotsPage: React.FC = () => {
           </>
         )}
 
-        {/* Alerta de Confirmación de Reserva */}
+        {/* Alerta de Confirmación de Reserva con Selección de Modo */}
         <IonAlert
           isOpen={!!selectedSlot}
-          onDidDismiss={() => !reserving && setSelectedSlot(null)}
+          onDidDismiss={(e) => {
+            if (!reserving && e.detail.role !== 'confirm') {
+              setSelectedSlot(null);
+            }
+          }}
           header="Confirmar Reserva"
-          message={`¿Deseas reservar ${court?.name} de ${selectedSlot ? formatTime(selectedSlot.startTime) : ''} a ${selectedSlot ? formatTime(selectedSlot.endTime) : ''}?`}
+          message={`¿Deseas reservar ${court?.name} de ${selectedSlot ? formatTime(selectedSlot.startTime) : ''} a ${selectedSlot ? formatTime(selectedSlot.endTime) : ''}?\nSelecciona tu modo de juego:`}
+          inputs={[
+            {
+              label: 'Pádel Clásico (Dobles)',
+              type: 'radio',
+              value: 'DOUBLES', // Ajusta según espere el backend, usamos DOUBLES de la interfaz
+              checked: true
+            },
+            {
+              label: 'Pádel Super 8 (Singles)',
+              type: 'radio',
+              value: 'SINGLES'
+            }
+          ]}
           buttons={[
             {
               text: 'Cancelar',
@@ -177,7 +194,8 @@ export const CourtSlotsPage: React.FC = () => {
             },
             {
               text: 'Confirmar',
-              handler: handleReserve
+              role: 'confirm',
+              handler: (alertData) => handleReserve(alertData)
             }
           ]}
         />
