@@ -23,6 +23,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { authService } from '../services';
+import api from '../services/api';
 
 /**
  * Página LoginPage
@@ -84,17 +85,24 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     try {
       // Llamada al servicio que conecta con Cognito
-      const response = await authService.login({
-        username: email,
-        password: password
-      });
-
+      const result = await authService.login({ username: email, password });
+      
       const session = await fetchAuthSession();
       if (session.tokens?.accessToken) {
         localStorage.setItem('cognito_access_token', session.tokens.accessToken.toString());
       }
 
-      console.log('[LoginPage] Login exitoso:', response);
+      console.log('[LoginPage] Login exitoso:', result);
+
+      try {
+        const profile = await api.get('/users/me');
+        if (profile.data?.role === 'ADMIN') {
+          history.push('/admin/dashboard');
+          return;
+        }
+      } catch (e) {
+        console.warn('No se pudo verificar el rol de administrador', e);
+      }
       
       // Redireccionar al catálogo de canchas (rutas actualizadas)
       history.push('/app/courts');
