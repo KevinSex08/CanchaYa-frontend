@@ -198,7 +198,7 @@ export const ReservationWizardPage: React.FC = () => {
         {/* PASO 1: Modalidad */}
         {step === 1 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px', color: 'var(--ion-color-dark)' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px', color: '#1a1a1a' }}>
               Elige tu Modo de Juego
             </h2>
             
@@ -211,8 +211,8 @@ export const ReservationWizardPage: React.FC = () => {
               }}
             >
               <IonCardContent style={{ textAlign: 'center' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>Pádel Clásico</h3>
-                <p style={{ color: 'var(--ion-color-medium)' }}>Dobles (4 jugadores). Requiere 1 cancha.</p>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1a1a1a' }}>Pádel Clásico</h3>
+                <p style={{ color: '#666' }}>Dobles (4 jugadores). Requiere 1 cancha.</p>
               </IonCardContent>
             </IonCard>
 
@@ -225,8 +225,8 @@ export const ReservationWizardPage: React.FC = () => {
               }}
             >
               <IonCardContent style={{ textAlign: 'center' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>Súper 8</h3>
-                <p style={{ color: 'var(--ion-color-medium)' }}>Competencia dinámica (8 jugadores). Requiere 2 canchas simultáneas.</p>
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1a1a1a' }}>Súper 8</h3>
+                <p style={{ color: '#666' }}>Competencia dinámica (8 jugadores). Requiere 2 canchas simultáneas.</p>
               </IonCardContent>
             </IonCard>
           </div>
@@ -235,10 +235,10 @@ export const ReservationWizardPage: React.FC = () => {
         {/* PASO 2: Selección de Fecha */}
         {step === 2 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: '#1a1a1a' }}>
               Selecciona la Fecha
             </h2>
-            <p style={{ textAlign: 'center', color: 'var(--ion-color-medium)', marginBottom: '20px' }}>
+            <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
               ¿Cuándo deseas jugar?
             </p>
 
@@ -264,17 +264,17 @@ export const ReservationWizardPage: React.FC = () => {
         {/* PASO 3: Selección de Hora */}
         {step === 3 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: '#1a1a1a' }}>
               Horarios para el {targetDateStr}
             </h2>
-            <p style={{ textAlign: 'center', color: 'var(--ion-color-dark)', marginBottom: '20px' }}>
+            <p style={{ textAlign: 'center', color: '#1a1a1a', marginBottom: '20px' }}>
               Buscando para modo {gameMode === 'CLASSIC' ? 'Clásico (1 Cancha)' : 'Súper 8 (2 Canchas)'}
             </p>
 
             {loading ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 <IonSpinner name="crescent" color="primary" />
-                <p style={{ color: 'var(--ion-color-dark)', marginTop: '16px' }}>Cargando disponibilidad global...</p>
+                <p style={{ color: '#1a1a1a', marginTop: '16px' }}>Cargando disponibilidad global...</p>
               </div>
             ) : error ? (
               <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -285,7 +285,7 @@ export const ReservationWizardPage: React.FC = () => {
             ) : sortedTimes.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 <IonIcon icon={calendarOutline} style={{ fontSize: '48px', color: '#ccc' }} />
-                <p style={{ color: 'var(--ion-color-dark)', marginTop: '16px' }}>No hay canchas libres en esta fecha.</p>
+                <p style={{ color: '#1a1a1a', marginTop: '16px' }}>No hay canchas libres en esta fecha.</p>
               </div>
             ) : (
               <IonList style={{ background: 'transparent' }}>
@@ -310,7 +310,7 @@ export const ReservationWizardPage: React.FC = () => {
                     >
                       <IonIcon icon={timeOutline} slot="start" color={isAvailable ? 'primary' : 'medium'} />
                       <IonLabel>
-                        <h3 style={{ fontWeight: 'bold', fontSize: '18px', color: 'var(--ion-color-dark)' }}>{time}</h3>
+                        <h3 style={{ fontWeight: 'bold', fontSize: '18px', color: '#1a1a1a' }}>{time}</h3>
                         <p style={{ color: isAvailable ? 'var(--ion-color-success)' : 'var(--ion-color-danger)' }}>
                           {slots.length} cancha{slots.length !== 1 ? 's' : ''} libre{slots.length !== 1 ? 's' : ''}
                         </p>
@@ -330,10 +330,10 @@ export const ReservationWizardPage: React.FC = () => {
         {/* PASO 4: Selección de Canchas y Confirmación */}
         {step === 4 && (
           <div className="animate-fade-in">
-            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: 'var(--ion-color-dark)' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: '#1a1a1a' }}>
               Elige tu{gameMode === 'SUPER_8' ? 's' : ''} Cancha{gameMode === 'SUPER_8' ? 's' : ''}
             </h2>
-            <p style={{ textAlign: 'center', color: 'var(--ion-color-dark)', marginBottom: '20px' }}>
+            <p style={{ textAlign: 'center', color: '#1a1a1a', marginBottom: '20px' }}>
               Horario: {selectedTime} | Selecciona {gameMode === 'CLASSIC' ? '1 cancha' : '2 canchas'}
             </p>
 
@@ -362,8 +362,8 @@ export const ReservationWizardPage: React.FC = () => {
                   >
                     <IonIcon icon={tennisballOutline} slot="start" color={isSelected ? 'primary' : 'medium'} />
                     <IonLabel>
-                      <h3 style={{ fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>{court?.name || `Cancha ${slot.courtId}`}</h3>
-                      <p style={{ color: 'var(--ion-color-medium)' }}>
+                      <h3 style={{ fontWeight: 'bold', color: '#1a1a1a' }}>{court?.name || `Cancha ${slot.courtId}`}</h3>
+                      <p style={{ color: '#666' }}>
                         {court?.surface ? court.surface.toUpperCase() : 'PÁDEL STANDARD'}
                       </p>
                     </IonLabel>
