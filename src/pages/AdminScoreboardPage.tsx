@@ -33,9 +33,10 @@ export const AdminScoreboardPage: React.FC = () => {
         try {
           const response = await adminService.getAllReservations();
           setAllReservations(response.data || response);
-        } catch (e) {
-          console.error("Error al obtener reservas", e);
-          setError("No se pudieron cargar los partidos activos.");
+        } catch (e: any) {
+          console.error("Error al obtener reservas del backend:", e.response?.data);
+          const backendMsg = e.response?.data?.message || e.response?.data?.error || JSON.stringify(e.response?.data);
+          setError(`Error del servidor (500): ${backendMsg}. Pide al backend que revise los logs de la ruta /reservations.`);
         } finally {
           setLoading(false);
         }

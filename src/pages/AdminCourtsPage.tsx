@@ -102,8 +102,10 @@ export const AdminCourtsPage: React.FC = () => {
       setShowModal(false);
       setLoading(true);
       fetchCourts(); // Recargar canchas
-    } catch (error) {
-      present({ message: selectedCourt ? 'Error al actualizar la cancha' : 'Error al crear la cancha', duration: 3000, color: 'danger' });
+    } catch (error: any) {
+      console.error('Error del backend:', error.response?.data);
+      const backendMsg = error.response?.data?.message || error.response?.data?.error || JSON.stringify(error.response?.data);
+      present({ message: `Error: ${backendMsg}`, duration: 5000, color: 'danger' });
     } finally {
       setIsSubmitting(false);
     }
