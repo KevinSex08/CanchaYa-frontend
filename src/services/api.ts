@@ -32,8 +32,8 @@ api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const session = await fetchAuthSession();
-      // Aseguramos sacar el AccessToken
-      const token = session.tokens?.accessToken?.toString();
+      // Extraemos el token. Priorizamos idToken porque a veces Cognito no retorna accessToken dependiendo del flujo.
+      const token = session.tokens?.idToken?.toString() || session.tokens?.accessToken?.toString();
       
       if (token && config.headers) {
         // En Axios moderno DEBE usarse el método .set()
