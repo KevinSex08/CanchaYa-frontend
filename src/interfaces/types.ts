@@ -36,7 +36,7 @@ export type GameType = 'SINGLES' | 'DOUBLES' | 'CLASSIC' | 'SUPER_8';
 export interface Reservation {
   id: number;
   slotId: number;
-  userId: string;
+  cognitoUserId: string;
   gameType: GameType;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   createdAt: string;

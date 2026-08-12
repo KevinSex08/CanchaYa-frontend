@@ -102,8 +102,8 @@ export const AdminScoreboardPage: React.FC = () => {
                 >
                   <div>
                     <h3 style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>Reserva #{res.id}</h3>
-                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Usuario: {res.userId}</p>
-                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Cancha ID: {res.slot?.courtId || 'N/A'}</p>
+                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Usuario: {res.cognitoUserId}</p>
+                    <p style={{ margin: '0', fontSize: '13px', color: 'gray' }}>Cancha: {res.slot?.court?.name || res.slot?.courtId}</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <IonText color="primary" style={{ fontWeight: 'bold', fontSize: '14px' }}>{res.gameType}</IonText>
@@ -123,7 +123,7 @@ export const AdminScoreboardPage: React.FC = () => {
                 Ajusta los marcadores y finaliza el registro.
               </p>
               <div style={{ marginTop: '12px', padding: '12px', borderRadius: '8px', border: '1px solid var(--ion-color-step-150, #e9ecef)' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>Titular: {reservation.userId}</p>
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>Titular: {reservation.cognitoUserId}</p>
                 <p style={{ margin: '0', fontSize: '14px', color: 'var(--ion-color-medium)' }}>
                   Modo: {reservation.gameType === 'SUPER_8' ? 'Súper 8' : 'Clásico'}
                 </p>
