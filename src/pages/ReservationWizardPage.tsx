@@ -83,16 +83,6 @@ export const ReservationWizardPage: React.FC = () => {
     }
   };
 
-  // Función para deshabilitar fechas en el calendario que no tienen ninguna cancha libre
-  const isDateEnabled = (dateString: string) => {
-    const targetDateStr = dateString.split('T')[0];
-    return availableSlots.some(slot => {
-      if (!slot.isAvailable) return false;
-      const { date } = getSlotDateTime(slot.startTime);
-      return date === targetDateStr;
-    });
-  };
-
   // 2. Filtrar slots por fecha seleccionada y isAvailable === true
   const targetDateStr = selectedDate.split('T')[0]; // "YYYY-MM-DD"
   
@@ -260,7 +250,6 @@ export const ReservationWizardPage: React.FC = () => {
                 value={selectedDate}
                 onIonChange={e => setSelectedDate(e.detail.value as string)}
                 min={new Date().toISOString().split('T')[0]} // No permitir fechas pasadas
-                isDateEnabled={isDateEnabled}
                 style={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
             </div>
