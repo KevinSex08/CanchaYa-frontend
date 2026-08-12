@@ -67,10 +67,12 @@ export const ReservationWizardPage: React.FC = () => {
   // 1. Helper para parsear la fecha/hora del slot robustamente
   const getSlotDateTime = (startTime: string) => {
     try {
-      if (startTime.includes('T')) {
+      // Soportar tanto '2026-08-13T10:00:00Z' como '2026-08-13 10:00:00'
+      const normalized = startTime.replace(' ', 'T');
+      if (normalized.includes('T')) {
         return {
-          date: startTime.split('T')[0],
-          time: startTime.split('T')[1].substring(0, 5)
+          date: normalized.split('T')[0],
+          time: normalized.split('T')[1].substring(0, 5)
         };
       }
       // Fallback si el backend solo envía "HH:mm" (asumimos hoy)
@@ -79,6 +81,16 @@ export const ReservationWizardPage: React.FC = () => {
     } catch (e) {
       return { date: '', time: '' };
     }
+  };
+
+  // Función para deshabilitar fechas en el calendario que no tienen ninguna cancha libre
+  const isDateEnabled = (dateString: string) => {
+    const targetDateStr = dateString.split('T')[0];
+    return availableSlots.some(slot => {
+      if (!slot.isAvailable) return false;
+      const { date } = getSlotDateTime(slot.startTime);
+      return date === targetDateStr;
+    });
   };
 
   // 2. Filtrar slots por fecha seleccionada y isAvailable === true
@@ -248,6 +260,7 @@ export const ReservationWizardPage: React.FC = () => {
                 value={selectedDate}
                 onIonChange={e => setSelectedDate(e.detail.value as string)}
                 min={new Date().toISOString().split('T')[0]} // No permitir fechas pasadas
+                isDateEnabled={isDateEnabled}
                 style={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
             </div>
