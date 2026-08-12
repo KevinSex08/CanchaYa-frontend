@@ -153,11 +153,11 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
   return (
     <>
       <IonCard style={{ borderRadius: '16px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)' }}>
-        <IonCardHeader style={{ background: 'var(--ion-color-light)', borderBottom: '1px solid var(--ion-color-step-150, #e9ecef)', padding: '16px 20px' }}>
+        <IonCardHeader style={{ borderBottom: '1px solid var(--ion-color-step-150, #e9ecef)', padding: '16px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <IonIcon icon={trophyOutline} color="warning" style={{ fontSize: '24px', marginRight: '10px' }} />
             <div>
-              <IonCardTitle style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>Registrar Marcador</IonCardTitle>
+              <IonCardTitle style={{ fontSize: '18px', fontWeight: 'bold' }}>Registrar Marcador</IonCardTitle>
               <IonText color="medium" style={{ fontSize: '12px' }}>{courtName} (Reserva #{reservationId})</IonText>
             </div>
           </div>
@@ -184,7 +184,7 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
               <IonRow className="ion-align-items-center ion-justify-content-center">
                 <IonCol size="5" style={{ textAlign: 'center' }}>
                   <IonText color="primary" style={{ fontWeight: 'bold' }}>EQUIPO 1</IonText>
-                  <div style={{ background: 'var(--ion-color-light)', color: 'var(--ion-color-dark)', borderRadius: '12px', padding: '16px', fontSize: '48px', fontWeight: '800', margin: '8px auto', width: '90px' }}>
+                  <div style={{ background: 'var(--ion-color-step-50, #f4f5f8)', borderRadius: '12px', padding: '16px', fontSize: '48px', fontWeight: '800', margin: '8px auto', width: '90px' }}>
                     {scoreTeam1}
                   </div>
                   <IonButton fill="outline" onClick={() => decrementScore(1)} disabled={isSubmitting || scoreTeam1 === 0}><IonIcon icon={removeOutline} /></IonButton>
@@ -195,7 +195,7 @@ export const MatchScoreboard: React.FC<MatchScoreboardProps> = ({
                 </IonCol>
                 <IonCol size="5" style={{ textAlign: 'center' }}>
                   <IonText color="secondary" style={{ fontWeight: 'bold' }}>EQUIPO 2</IonText>
-                  <div style={{ background: 'var(--ion-color-light)', color: 'var(--ion-color-dark)', borderRadius: '12px', padding: '16px', fontSize: '48px', fontWeight: '800', margin: '8px auto', width: '90px' }}>
+                  <div style={{ background: 'var(--ion-color-step-50, #f4f5f8)', borderRadius: '12px', padding: '16px', fontSize: '48px', fontWeight: '800', margin: '8px auto', width: '90px' }}>
                     {scoreTeam2}
                   </div>
                   <IonButton fill="outline" onClick={() => decrementScore(2)} disabled={isSubmitting || scoreTeam2 === 0}><IonIcon icon={removeOutline} /></IonButton>
