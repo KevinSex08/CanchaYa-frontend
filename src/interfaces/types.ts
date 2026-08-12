@@ -2,6 +2,14 @@
  * Tipos de datos para el dominio de CanchaYA
  */
 
+export interface User {
+  id: string;
+  name?: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  avatarUrl?: string;
+}
+
 export interface Court {
   id: number;
   name: string;

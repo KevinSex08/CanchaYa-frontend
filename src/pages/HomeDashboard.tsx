@@ -50,6 +50,11 @@ export const HomeDashboard: React.FC = () => {
         api.get<any>('/users/me')
       ]);
 
+      if (profileRes.data?.role === 'ADMIN') {
+        history.push('/admin/dashboard');
+        return;
+      }
+
       setCourts(courtsRes.data.slice(0, 2));
 
       // Calcular reservas activas (no canceladas y con fecha futura)

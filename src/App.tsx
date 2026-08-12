@@ -21,6 +21,10 @@ import {
 /* Importaciones de Páginas */
 import { CourtsPage } from './pages/CourtsPage';
 import { AdminScoreboardPage } from './pages/AdminScoreboardPage';
+import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminCourtsPage } from './pages/AdminCourtsPage';
+import { AdminSlotsPage } from './pages/AdminSlotsPage';
+import { AdminUsersPage } from './pages/AdminUsersPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { HomeDashboard } from './pages/HomeDashboard';
@@ -61,6 +65,10 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
+        <Route exact path="/admin/dashboard" component={AdminDashboard} />
+        <Route exact path="/admin/courts" component={AdminCourtsPage} />
+        <Route exact path="/admin/slots" component={AdminSlotsPage} />
+        <Route exact path="/admin/users" component={AdminUsersPage} />
         <Route exact path="/admin/scoreboard" component={AdminScoreboardPage} />
         <Route exact path="/admin/scoreboard/:id" component={AdminScoreboardPage} />
         
