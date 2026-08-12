@@ -314,6 +314,10 @@ export const MisPartidos: React.FC = () => {
                         >
                           Cancelar Turno
                         </IonButton>
+                      </div>
+                    )}
+                    {segment === 'history' && reservation.status === 'CONFIRMED' && (
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', gap: '8px' }}>
                         <IonButton 
                           color="secondary" 
                           size="small"
