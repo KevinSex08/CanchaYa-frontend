@@ -53,5 +53,12 @@ export const adminService = {
   makeAdmin: async (email: string) => {
     // Note: this calls /users/admin/roles because it's handled by users microservice
     return await api.post('/users/admin/roles', { email });
+  },
+
+  /**
+   * Obtener todos los usuarios del sistema (requiere rol ADMIN)
+   */
+  getAllUsers: async () => {
+    return await api.get('/users/all');
   }
 };
