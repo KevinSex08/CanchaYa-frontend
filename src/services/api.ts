@@ -32,15 +32,18 @@ api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const session = await fetchAuthSession();
-      // El backend requiere el IdToken para poder leer los grupos (cognito:groups) y el correo electrónico.
-      // El AccessToken NO contiene el correo, lo que causa el error 401 en /users/me.
-      const token = session.tokens?.idToken?.toString() || session.tokens?.accessToken?.toString();
-
+      // Aseguramos sacar el AccessToken
+      const token = session.tokens?.accessToken?.toString();
+      
       if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+        // En Axios moderno DEBE usarse el método .set()
+        config.headers.set('Authorization', `Bearer ${token}`);
+        console.log("✅ Token adjuntado exitosamente a la petición:", config.url);
+      } else {
+        console.warn("⚠️ No se encontró ningún token en Cognito");
       }
     } catch (error) {
-      // El usuario no está autenticado, continuar sin token
+      console.error("Error obteniendo sesión de Cognito", error);
     }
     return config;
   },
