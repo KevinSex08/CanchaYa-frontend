@@ -7,7 +7,8 @@ import {
   IonTitle,
   IonButtons,
   IonButton,
-  IonIcon
+  IonIcon,
+  IonMenuButton
 } from '@ionic/react';
 import { personCircleOutline, shieldOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
@@ -41,7 +42,10 @@ export const CourtsPage: React.FC = () => {
     <IonPage id="courts-page">
       <IonHeader translucent>
         <IonToolbar color="primary">
-          <IonTitle style={{ fontWeight: 'bold' }}>CanchaYA</IonTitle>
+          <IonButtons slot="start">
+            <IonMenuButton style={{ color: '#ffffff' }} />
+          </IonButtons>
+          <IonTitle style={{ fontWeight: '800', letterSpacing: '0.5px', color: '#ffffff' }}>CanchaYA</IonTitle>
           
           <IonButtons slot="end">
             {/* Botón para navegar al panel administrativo (útil para pruebas) */}
@@ -49,8 +53,8 @@ export const CourtsPage: React.FC = () => {
               <IonIcon slot="icon-only" icon={shieldOutline} />
             </IonButton>
             
-            <IonButton title="Perfil de Usuario">
-              <IonIcon slot="icon-only" icon={personCircleOutline} />
+            <IonButton onClick={() => history.push('/app/perfil')} title="Mi Perfil">
+              <IonIcon slot="icon-only" icon={personCircleOutline} style={{ color: '#ffffff' }} />
             </IonButton>
           </IonButtons>
         </IonToolbar>

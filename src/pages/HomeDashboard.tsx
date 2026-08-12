@@ -22,7 +22,6 @@ import {
 } from '@ionic/react';
 import {
   calendarOutline,
-  trophyOutline,
   personCircleOutline,
   arrowForwardOutline,
   tennisballOutline,
@@ -83,12 +82,12 @@ export const HomeDashboard: React.FC = () => {
       <IonHeader translucent>
         <IonToolbar color="primary">
           <IonButtons slot="start">
-            <IonMenuButton />
+            <IonMenuButton style={{ color: '#ffffff' }} />
           </IonButtons>
-          <IonTitle style={{ fontWeight: '800', letterSpacing: '0.5px' }}>CanchaYA</IonTitle>
+          <IonTitle style={{ fontWeight: '800', letterSpacing: '0.5px', color: '#ffffff' }}>CanchaYA</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => history.push('/app/perfil')} title="Mi Perfil">
-              <IonIcon slot="icon-only" icon={personCircleOutline} />
+              <IonIcon slot="icon-only" icon={personCircleOutline} style={{ color: '#ffffff' }} />
             </IonButton>
           </IonButtons>
         </IonToolbar>

@@ -145,9 +145,9 @@ export const MisPartidos: React.FC = () => {
       <IonHeader translucent>
         <IonToolbar color="primary">
           <IonButtons slot="start">
-            <IonMenuButton />
+            <IonMenuButton style={{ color: '#ffffff' }} />
           </IonButtons>
-          <IonTitle style={{ fontWeight: '800' }}>Mis Partidos</IonTitle>
+          <IonTitle style={{ fontWeight: '800', color: '#ffffff' }}>Mis Partidos</IonTitle>
         </IonToolbar>
         
         {/* Barra de Segmentos Estilizada */}

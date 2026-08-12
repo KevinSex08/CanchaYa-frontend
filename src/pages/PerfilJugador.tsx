@@ -70,9 +70,9 @@ export const PerfilJugador: React.FC = () => {
       <IonHeader translucent>
         <IonToolbar color="primary">
           <IonButtons slot="start">
-            <IonMenuButton />
+            <IonMenuButton style={{ color: '#ffffff' }} />
           </IonButtons>
-          <IonTitle style={{ fontWeight: '800' }}>Mi Perfil</IonTitle>
+          <IonTitle style={{ fontWeight: '800', color: '#ffffff' }}>Mi Perfil</IonTitle>
         </IonToolbar>
       </IonHeader>
 
