@@ -184,7 +184,17 @@ export const ReservationWizardPage: React.FC = () => {
       }, 1500);
     } catch (err: any) {
       console.error('Error al reservar:', err);
-      setError('Error al procesar la reserva. ' + (err.message || ''));
+      let errorMessage = 'Error al procesar la reserva. Inténtalo de nuevo.';
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = 'Para poder reservar, necesitas iniciar sesión primero.';
+      } else if (err.response?.status === 409) {
+        errorMessage = '¡Ups! Ya tienes el límite máximo de reservas activas o la cancha fue reservada.';
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = 'Error al procesar la reserva. ' + err.message;
+      }
+      setError(errorMessage);
     } finally {
       setReserving(false);
     }
