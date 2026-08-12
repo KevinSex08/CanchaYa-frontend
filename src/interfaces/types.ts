@@ -28,9 +28,10 @@ export interface Slot {
   endTime: string;
   price: number;
   isAvailable: boolean;
+  court?: Court;
 }
 
-export type GameType = 'SINGLES' | 'DOUBLES';
+export type GameType = 'SINGLES' | 'DOUBLES' | 'CLASSIC' | 'SUPER_8';
 
 export interface Reservation {
   id: number;
