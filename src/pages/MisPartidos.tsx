@@ -185,13 +185,33 @@ export const MisPartidos: React.FC = () => {
           </div>
         ) : error ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px', textAlign: 'center', padding: '24px' }}>
-            <IonText color="danger">
-              <h3 style={{ fontWeight: 'bold', marginBottom: '8px' }}>¡Ups! Algo salió mal</h3>
-            </IonText>
-            <p style={{ color: 'var(--ion-color-medium)', marginBottom: '24px', fontSize: '15px' }}>{error}</p>
-            <IonButton color="primary" onClick={fetchReservations} style={{ '--border-radius': '8px', fontWeight: '600' }}>
-              Reintentar
-            </IonButton>
+            {error.includes('autorizada') || error.includes('Sesión') ? (
+              <>
+                <IonIcon icon={calendarOutline} style={{ fontSize: '80px', color: 'var(--ion-color-primary)', marginBottom: '16px', opacity: 0.8 }} />
+                <h3 style={{ fontWeight: '800', marginBottom: '12px', fontSize: '24px', color: 'var(--ion-text-color)' }}>
+                  ¡Hola, Invitado!
+                </h3>
+                <p style={{ color: 'var(--ion-color-medium)', marginBottom: '32px', fontSize: '16px', lineHeight: '1.5', maxWidth: '300px' }}>
+                  Para ver tus partidos y gestionar tus reservas, necesitas acceder a tu cuenta.
+                </p>
+                <IonButton expand="block" color="primary" onClick={() => history.push('/login')} style={{ '--border-radius': '12px', fontWeight: 'bold', height: '52px', width: '100%', maxWidth: '300px' }}>
+                  Iniciar Sesión
+                </IonButton>
+                <IonButton expand="block" fill="clear" color="primary" onClick={() => history.push('/register')} style={{ marginTop: '12px', fontWeight: '600' }}>
+                  Crear una cuenta nueva
+                </IonButton>
+              </>
+            ) : (
+              <>
+                <IonText color="danger">
+                  <h3 style={{ fontWeight: 'bold', marginBottom: '8px' }}>¡Ups! Algo salió mal</h3>
+                </IonText>
+                <p style={{ color: 'var(--ion-color-medium)', marginBottom: '24px', fontSize: '15px' }}>{error}</p>
+                <IonButton color="primary" onClick={fetchReservations} style={{ '--border-radius': '8px', fontWeight: '600' }}>
+                  Reintentar
+                </IonButton>
+              </>
+            )}
           </div>
         ) : filteredReservations.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px', textAlign: 'center', padding: '24px' }}>
