@@ -386,6 +386,7 @@ export const ReservationWizardPage: React.FC = () => {
                       checked={isSelected} 
                       onIonChange={() => handleToggleSlot(slot)} 
                       onClick={(e) => e.stopPropagation()} 
+                      aria-label={`Seleccionar ${court?.name || 'cancha'}`}
                     />
                   </IonItem>
                 );
