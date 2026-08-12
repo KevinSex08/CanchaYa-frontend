@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { authService } from '../services';
 import {
   IonPage,
   IonContent,
@@ -44,6 +45,13 @@ export const HomeDashboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const isAuth = await authService.isAuthenticated();
+      if (!isAuth) {
+        setError('Invitado');
+        setLoading(false);
+        return;
+      }
+
       const [courtsRes, reservationsRes, profileRes] = await Promise.all([
         api.get<Court[]>('/courts'),
         api.get<Reservation[]>('/reservations/my'),
@@ -69,7 +77,7 @@ export const HomeDashboard: React.FC = () => {
     } catch (err: any) {
       console.error('Error al cargar datos del Dashboard:', err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        setError('Sesión expirada o no autorizada. Redirigiendo...');
+        setError('El servidor rechazó tu sesión (Error 401/403). Comunícate con backend.');
       } else {
         setError('No se pudo conectar al servidor. Inténtalo de nuevo.');
       }
@@ -106,7 +114,7 @@ export const HomeDashboard: React.FC = () => {
           </div>
         ) : error ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center', padding: '24px' }}>
-            {error.includes('autorizada') || error.includes('Sesión') ? (
+            {error === 'Invitado' ? (
               <>
                 <IonIcon icon={personCircleOutline} style={{ fontSize: '80px', color: 'var(--ion-color-primary)', marginBottom: '16px', opacity: 0.8 }} />
                 <h3 style={{ fontWeight: '800', marginBottom: '12px', fontSize: '24px', color: 'var(--ion-text-color)' }}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { authService } from '../services';
 import {
   IonPage,
   IonContent,
@@ -55,6 +56,12 @@ export const MisPartidos: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const isAuth = await authService.isAuthenticated();
+      if (!isAuth) {
+        setError('Invitado');
+        setLoading(false);
+        return;
+      }
       const response = await api.get<Reservation[]>('/reservations/my');
       
       // Ordenar por fecha del slot (más reciente primero)
@@ -67,7 +74,7 @@ export const MisPartidos: React.FC = () => {
     } catch (err: any) {
       console.error('Error al cargar reservas:', err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        setError('Sesión expirada o no autorizada. Redirigiendo...');
+        setError('El servidor rechazó tu sesión (Error 401/403). Comunícate con backend.');
       } else {
         setError('No se pudieron obtener tus partidos. Inténtalo de nuevo.');
       }

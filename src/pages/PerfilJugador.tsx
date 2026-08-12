@@ -33,12 +33,18 @@ export const PerfilJugador: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const isAuth = await authService.isAuthenticated();
+      if (!isAuth) {
+        setError('Invitado');
+        setLoading(false);
+        return;
+      }
       const response = await api.get('/users/me');
       setPlayerInfo(response.data);
     } catch (err: any) {
       console.error('Error al cargar perfil:', err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        setError('Sesión expirada o no autorizada. Redirigiendo...');
+        setError('El servidor rechazó tu sesión (Error 401/403). Comunícate con backend.');
       } else {
         setError('No se pudo obtener la información de tu perfil.');
       }
@@ -82,7 +88,7 @@ export const PerfilJugador: React.FC = () => {
           </div>
         ) : error ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center', padding: '24px' }}>
-            {error.includes('autorizada') || error.includes('Sesión') ? (
+            {error === 'Invitado' ? (
               <>
                 <IonIcon icon={logOutOutline} style={{ fontSize: '80px', color: 'var(--ion-color-primary)', marginBottom: '16px', opacity: 0.8 }} />
                 <h3 style={{ fontWeight: '800', marginBottom: '12px', fontSize: '24px', color: 'var(--ion-text-color)' }}>
