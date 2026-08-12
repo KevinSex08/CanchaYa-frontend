@@ -122,8 +122,8 @@ export const AdminScoreboardPage: React.FC = () => {
               <p style={{ margin: '4px 0 0 0', color: 'var(--ion-color-medium)', fontSize: '14px' }}>
                 Ajusta los marcadores y finaliza el registro.
               </p>
-              <div style={{ marginTop: '12px', background: 'var(--ion-color-light)', padding: '12px', borderRadius: '8px', border: '1px solid var(--ion-color-step-150, #e9ecef)' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold', color: 'var(--ion-color-dark)' }}>Titular: {reservation.userId}</p>
+              <div style={{ marginTop: '12px', padding: '12px', borderRadius: '8px', border: '1px solid var(--ion-color-step-150, #e9ecef)' }}>
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>Titular: {reservation.userId}</p>
                 <p style={{ margin: '0', fontSize: '14px', color: 'var(--ion-color-medium)' }}>
                   Modo: {reservation.gameType === 'SUPER_8' ? 'Súper 8' : 'Clásico'}
                 </p>
