@@ -46,7 +46,7 @@ export const PerfilJugador: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/users/profile/');
+      const response = await api.get('/users/me');
       setPlayerInfo(response.data);
     } catch (err: any) {
       console.error('Error al cargar perfil:', err);

@@ -11,7 +11,7 @@ export const courtService = {
    */
   getCourts: async (): Promise<Court[]> => {
     try {
-      const response = await api.get<Court[]>('/courts/');
+      const response = await api.get<Court[]>('/courts');
       return response.data;
     } catch (error) {
       console.error('Error al obtener canchas:', error);
