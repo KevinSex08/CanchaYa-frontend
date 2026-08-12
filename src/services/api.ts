@@ -32,8 +32,9 @@ api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const session = await fetchAuthSession();
-      // El backend (Spring Security) exige obligatoriamente el AccessToken para validar la sesión
-      const token = session.tokens?.accessToken?.toString();
+      // El backend requiere el IdToken para poder leer los grupos (cognito:groups) y el correo electrónico.
+      // El AccessToken NO contiene el correo, lo que causa el error 401 en /users/me.
+      const token = session.tokens?.idToken?.toString() || session.tokens?.accessToken?.toString();
 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
